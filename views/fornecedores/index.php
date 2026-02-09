@@ -6,6 +6,7 @@
 $fornecedores = $fornecedores ?? [];
 $baseUrl = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/');
 $apiBase = ($baseUrl ? $baseUrl . '/' : '') . 'index.php?controller=fornecedor';
+$indexUrl = ($baseUrl ? $baseUrl . '/' : '') . 'index.php';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -17,6 +18,10 @@ $apiBase = ($baseUrl ? $baseUrl . '/' : '') . 'index.php?controller=fornecedor';
 </head>
 <body>
     <div class="container">
+        <nav class="page-nav">
+            <a href="<?= htmlspecialchars($indexUrl) ?>?controller=fornecedor&action=index" class="active">Fornecedores</a>
+            <a href="<?= htmlspecialchars($indexUrl) ?>?controller=produto&action=index">Produtos</a>
+        </nav>
         <header class="page-header">
             <h1>Fornecedores</h1>
             <button type="button" class="btn btn-primary" id="btn-novo-fornecedor">Novo fornecedor</button>

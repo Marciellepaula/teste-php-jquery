@@ -71,10 +71,16 @@ class FornecedorController
 
     /**
      * API: retorna lista de fornecedores em JSON (para AJAX).
+     * GET status: 'A' só ativos, 'I' só inativos, omitir ou 'all' = todos.
      */
     public function lista(): void
     {
-        $status = isset($_GET['status']) && $_GET['status'] === 'I' ? 'I' : 'A';
+        $status = null;
+        if (isset($_GET['status']) && $_GET['status'] === 'I') {
+            $status = 'I';
+        } elseif (isset($_GET['status']) && $_GET['status'] === 'A') {
+            $status = 'A';
+        }
         $fornecedores = $this->model->listar($status);
         $this->json(['success' => true, 'data' => $fornecedores]);
     }
@@ -109,7 +115,11 @@ class FornecedorController
         $dados = $this->normalizarPost();
         $errors = $this->validar($dados);
         if (!empty($errors)) {
-            $this->json(['success' => false, 'message' => 'Nome é obrigatório.', 'errors' => $errors]);
+            $msg = in_array('nome', $errors) ? 'Nome é obrigatório.' : 'Verifique os campos.';
+            if (in_array('email', $errors)) {
+                $msg = 'E-mail inválido.';
+            }
+            $this->json(['success' => false, 'message' => $msg, 'errors' => $errors]);
             return;
         }
         try {
@@ -141,7 +151,8 @@ class FornecedorController
         $dados = $this->normalizarPost();
         $errors = $this->validar($dados);
         if (!empty($errors)) {
-            $this->json(['success' => false, 'message' => 'Nome é obrigatório.', 'errors' => $errors]);
+            $msg = in_array('email', $errors) ? 'E-mail inválido.' : 'Nome é obrigatório.';
+            $this->json(['success' => false, 'message' => $msg, 'errors' => $errors]);
             return;
         }
         try {

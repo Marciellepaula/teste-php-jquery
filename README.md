@@ -46,7 +46,25 @@ Acesse: `http://localhost:8080/?controller=fornecedor&action=index`
 
 Respostas AJAX em JSON; validação básica (nome obrigatório, e-mail válido); feedback visual de sucesso/erro.
 
+## CRUD de Produtos
+
+- **Campos:** Nome, Descrição, Código interno, Status (Ativo/Inativo).
+- **URL:** `?controller=produto&action=index`
+- **Listar / Cadastrar / Editar / Excluir** via AJAX (jQuery), com validação (nome obrigatório, código interno único) e feedback visual.
+
+## Vínculo Produto × Fornecedor (N:N)
+
+Na listagem de **Produtos**, cada linha tem o botão **"Fornecedores"**, que abre uma **modal** onde é possível:
+
+- **Listar** fornecedores vinculados ao produto
+- **Adicionar** vínculo: busca dinâmica por nome/e-mail (AJAX, debounce), depois clicar em "Adicionar"
+- **Remover** vínculo individual (botão "Remover" na linha)
+- **Remover todos** os vínculos do produto em massa
+
+Interface em modal para manter o contexto na tela de produtos; busca dinâmica para boa UX com muitos fornecedores. Detalhes em [docs/VINCULOS-PRODUTO-FORNECEDOR.md](docs/VINCULOS-PRODUTO-FORNECEDOR.md).
+
 ## Documentação
 
 - [Arquitetura e fluxo da requisição](docs/ARQUITETURA.md)
 - [Modelagem do banco e exemplos de JOIN](docs/MODELAGEM-BANCO.md)
+- [Vínculo produto × fornecedor e UX](docs/VINCULOS-PRODUTO-FORNECEDOR.md)
