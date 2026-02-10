@@ -10,6 +10,9 @@ $indexUrl = ($baseUrl ? $baseUrl . '/' : '') . 'index.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fornecedores</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= $baseUrl ? htmlspecialchars($baseUrl) . '/css/style.css' : 'css/style.css' ?>">
 </head>
 <body>
@@ -99,7 +102,7 @@ $indexUrl = ($baseUrl ? $baseUrl . '/' : '') . 'index.php';
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="<?= $baseUrl ? htmlspecialchars($baseUrl) . '/js/jquery-4.0.0.js' : 'js/jquery-4.0.0.js' ?>"></script>
     <script>
         window.API_FORNECEDOR = {
             lista: '<?= $apiBase ?>&action=lista',

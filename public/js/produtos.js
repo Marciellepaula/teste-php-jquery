@@ -172,6 +172,9 @@
     var $vinculosBuscaLoading = $('#vinculos-busca-loading');
     var $vinculosMensagem = $('#vinculos-mensagem');
     var $btnRemoverTodos = $('#btn-remover-todos-vinculos');
+    var $vinculosHistoricoLista = $('#vinculos-historico-lista');
+    var $vinculosHistoricoVazia = $('#vinculos-historico-vazia');
+    var $vinculosHistoricoLoading = $('#vinculos-historico-loading');
     var buscaVinculosTimer = null;
     var DEBOUNCE_MS = 350;
 
@@ -198,9 +201,14 @@
                 return;
             }
             var itens = res.data.map(function (f) {
-                return '<li data-fornecedor-id="' + f.id + '">' +
-                    '<span>' + escapeHtml(f.nome) + (f.email ? ' <small>(' + escapeHtml(f.email) + ')</small>' : '') + '</span>' +
-                    '<button type="button" class="btn btn-small btn-excluir btn-remover-vinculo" data-fornecedor-id="' + f.id + '">Remover</button>' +
+                var principal = f.principal === 1 || f.principal === true;
+                var principalBadge = principal ? ' <span class="badge badge-principal">Principal</span>' : '';
+                var btnPrincipal = principal ? '' : ' <button type="button" class="btn btn-small btn-secondary btn-definir-principal" data-fornecedor-id="' + f.id + '">Definir como principal</button>';
+                var liClass = principal ? ' class="vinculo-item-principal"' : '';
+                return '<li data-fornecedor-id="' + f.id + '"' + liClass + '>' +
+                    '<span>' + escapeHtml(f.nome) + (f.email ? ' <small>(' + escapeHtml(f.email) + ')</small>' : '') + principalBadge + '</span>' +
+                    '<span class="vinculo-acoes">' + btnPrincipal +
+                    ' <button type="button" class="btn btn-small btn-excluir btn-remover-vinculo" data-fornecedor-id="' + f.id + '">Remover</button></span>' +
                     '</li>';
             });
             $vinculosLista.html(itens.join('')).show();
@@ -225,7 +233,7 @@
         }).done(function (res) {
             $vinculosBuscaLoading.hide();
             if (!res.success || !res.data || res.data.length === 0) {
-                $vinculosResultadosVazia.show();
+                $vinculosResultadosVazia.text('Nenhum fornecedor disponível. Cadastre em Fornecedores (status Ativo) ou já estão vinculados.').show();
                 return;
             }
             var itens = res.data.map(function (f) {
@@ -234,10 +242,54 @@
                     '<button type="button" class="btn btn-small btn-primary btn-add-vincular" data-fornecedor-id="' + f.id + '" data-nome="' + escapeHtml(f.nome) + '">Adicionar</button>' +
                     '</li>';
             });
+            $vinculosResultadosVazia.hide();
             $vinculosResultados.html(itens.join('')).show();
         }).fail(function () {
             $vinculosBuscaLoading.hide();
             mostrarVinculosMensagem('Erro na busca.', 'erro');
+        });
+    }
+
+    function formatarDataBr(datetimeStr) {
+        if (!datetimeStr) return '';
+        var d = new Date(datetimeStr);
+        if (isNaN(d.getTime())) return datetimeStr;
+        var day = ('0' + d.getDate()).slice(-2);
+        var month = ('0' + (d.getMonth() + 1)).slice(-2);
+        var year = d.getFullYear();
+        var h = ('0' + d.getHours()).slice(-2);
+        var min = ('0' + d.getMinutes()).slice(-2);
+        return day + '/' + month + '/' + year + ' ' + h + ':' + min;
+    }
+
+    var MSG_HISTORICO_VAZIO = 'Nenhum registro no histórico. Vincule ou desvincule fornecedores para gerar registros (é necessário rodar a migration do banco: sql/migration_opcao_b.sql).';
+    var MSG_HISTORICO_ERRO = 'Erro ao carregar histórico.';
+
+    function carregarHistoricoVinculos(produtoId) {
+        if (!produtoId) return;
+        $vinculosHistoricoLoading.show();
+        $vinculosHistoricoLista.hide().empty();
+        $vinculosHistoricoVazia.hide();
+        $.ajax({
+            url: window.API_PRODUTO.listaHistoricoVinculos,
+            method: 'GET',
+            data: { produto_id: produtoId },
+            dataType: 'json'
+        }).done(function (res) {
+            $vinculosHistoricoLoading.hide();
+            if (!res.success || !res.data || res.data.length === 0) {
+                $vinculosHistoricoVazia.removeClass('vinculos-historico-erro').text(MSG_HISTORICO_VAZIO).show();
+                return;
+            }
+            var itens = res.data.map(function (h) {
+                var texto = h.acao === 'vinculado' ? 'Vinculado' : (h.acao === 'desvinculado' ? 'Desvinculado' : h.acao);
+                return '<li>' + escapeHtml(h.fornecedor_nome) + ' – ' + texto + ' em ' + formatarDataBr(h.created_at) + '</li>';
+            });
+            $vinculosHistoricoVazia.hide();
+            $vinculosHistoricoLista.html(itens.join('')).show();
+        }).fail(function () {
+            $vinculosHistoricoLoading.hide();
+            $vinculosHistoricoVazia.text(MSG_HISTORICO_ERRO).addClass('vinculos-historico-erro').show();
         });
     }
 
@@ -250,6 +302,8 @@
         $vinculosMensagem.removeClass('visivel');
         $modalVinculos.attr('aria-hidden', 'false').addClass('aberto');
         carregarFornecedoresVinculados(produtoId);
+        buscarFornecedoresParaVincular(produtoId, '');
+        carregarHistoricoVinculos(produtoId);
     }
 
     function fecharModalFornecedores() {
@@ -274,10 +328,10 @@
         var produtoId = $vinculosProdutoId.val();
         if (!produtoId) return;
         clearTimeout(buscaVinculosTimer);
-        var q = $(this).val();
-        if (q.length < 2) {
+        var q = $(this).val().trim();
+        if (q.length < 1) {
             $vinculosResultados.empty().hide();
-            $vinculosResultadosVazia.hide();
+            $vinculosResultadosVazia.text('Digite nome ou e-mail para buscar.').show();
             return;
         }
         buscaVinculosTimer = setTimeout(function () {
@@ -299,6 +353,7 @@
             if (res.success) {
                 mostrarVinculosMensagem(res.message, 'sucesso');
                 carregarFornecedoresVinculados(produtoId);
+                carregarHistoricoVinculos(produtoId);
                 $vinculosBusca.trigger('input');
             } else {
                 mostrarVinculosMensagem(res.message || 'Erro ao vincular.', 'erro');
@@ -307,6 +362,31 @@
         }).fail(function () {
             mostrarVinculosMensagem('Erro de conexão.', 'erro');
             $btn.prop('disabled', false).text('Adicionar');
+        });
+    });
+
+    $(document).on('click', '.btn-definir-principal', function () {
+        var produtoId = $vinculosProdutoId.val();
+        var fornecedorId = $(this).data('fornecedor-id');
+        var $btn = $(this);
+        $btn.prop('disabled', true).text('…');
+        $.ajax({
+            url: window.API_PRODUTO.definirFornecedorPrincipal,
+            method: 'POST',
+            data: { produto_id: produtoId, fornecedor_id: fornecedorId },
+            dataType: 'json'
+        }).done(function (res) {
+            if (res.success) {
+                mostrarVinculosMensagem(res.message, 'sucesso');
+                carregarFornecedoresVinculados(produtoId);
+                carregarHistoricoVinculos(produtoId);
+            } else {
+                mostrarVinculosMensagem(res.message || 'Erro ao definir principal.', 'erro');
+                $btn.prop('disabled', false).text('Definir como principal');
+            }
+        }).fail(function () {
+            mostrarVinculosMensagem('Erro de conexão.', 'erro');
+            $btn.prop('disabled', false).text('Definir como principal');
         });
     });
 
@@ -324,6 +404,7 @@
             if (res.success) {
                 mostrarVinculosMensagem(res.message, 'sucesso');
                 carregarFornecedoresVinculados(produtoId);
+                carregarHistoricoVinculos(produtoId);
                 $vinculosBusca.trigger('input');
             } else {
                 mostrarVinculosMensagem(res.message || 'Erro ao remover.', 'erro');
@@ -349,6 +430,7 @@
             if (res.success) {
                 mostrarVinculosMensagem(res.message, 'sucesso');
                 carregarFornecedoresVinculados(produtoId);
+                carregarHistoricoVinculos(produtoId);
                 $vinculosBusca.trigger('input');
             } else {
                 mostrarVinculosMensagem(res.message || 'Erro.', 'erro');

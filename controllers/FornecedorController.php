@@ -1,20 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
+require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/FornecedorModel.php';
 
-class FornecedorController
+class FornecedorController extends BaseController
 {
     private FornecedorModel $model;
 
     public function __construct()
     {
         $this->model = new FornecedorModel();
-    }
-
-    private function json(array $data): void
-    {
-        header('Content-Type: application/json; charset=utf-8');
-        echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
     private function validar(array $dados): array
@@ -44,12 +41,7 @@ class FornecedorController
     public function index(): void
     {
         $fornecedores = $this->model->listar(null);
-        $viewPath = __DIR__ . '/../views/fornecedores/index.php';
-        if (file_exists($viewPath)) {
-            require $viewPath;
-        } else {
-            echo '<p>View não encontrada.</p>';
-        }
+        $this->renderView('views/fornecedores/index.php', ['fornecedores' => $fornecedores]);
     }
 
     public function lista(): void
@@ -66,7 +58,7 @@ class FornecedorController
 
     public function buscar(): void
     {
-        $id = (int) ($_GET['id'] ?? 0);
+        $id = $this->getInt('id', 'GET');
         if ($id <= 0) {
             $this->json(['success' => false, 'message' => 'ID inválido.']);
             return;
@@ -113,7 +105,7 @@ class FornecedorController
             $this->json(['success' => false, 'message' => 'Método não permitido.']);
             return;
         }
-        $id = (int) ($_POST['id'] ?? 0);
+        $id = $this->getInt('id', 'POST');
         if ($id <= 0) {
             $this->json(['success' => false, 'message' => 'ID inválido.']);
             return;
@@ -147,7 +139,7 @@ class FornecedorController
             $this->json(['success' => false, 'message' => 'Método não permitido.']);
             return;
         }
-        $id = (int) ($_POST['id'] ?? 0);
+        $id = $this->getInt('id', 'POST');
         if ($id <= 0) {
             $this->json(['success' => false, 'message' => 'ID inválido.']);
             return;

@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
+require_once __DIR__ . '/../core/BaseController.php';
 require_once __DIR__ . '/../models/ProdutoModel.php';
 require_once __DIR__ . '/../models/FornecedorProdutoModel.php';
 
-class ProdutoController
+class ProdutoController extends BaseController
 {
     private ProdutoModel $model;
     private FornecedorProdutoModel $vinculoModel;
@@ -12,12 +15,6 @@ class ProdutoController
     {
         $this->model = new ProdutoModel();
         $this->vinculoModel = new FornecedorProdutoModel();
-    }
-
-    private function json(array $data): void
-    {
-        header('Content-Type: application/json; charset=utf-8');
-        echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
     private function validar(array $dados, ?int $idParaEdicao = null): array
@@ -47,12 +44,7 @@ class ProdutoController
     public function index(): void
     {
         $produtos = $this->model->listar(null);
-        $viewPath = __DIR__ . '/../views/produtos/index.php';
-        if (file_exists($viewPath)) {
-            require $viewPath;
-        } else {
-            echo '<p>View não encontrada.</p>';
-        }
+        $this->renderView('views/produtos/index.php', ['produtos' => $produtos]);
     }
 
     public function lista(): void
@@ -69,7 +61,7 @@ class ProdutoController
 
     public function buscar(): void
     {
-        $id = (int) ($_GET['id'] ?? 0);
+        $id = $this->getInt('id', 'GET');
         if ($id <= 0) {
             $this->json(['success' => false, 'message' => 'ID inválido.']);
             return;
@@ -113,7 +105,7 @@ class ProdutoController
             $this->json(['success' => false, 'message' => 'Método não permitido.']);
             return;
         }
-        $id = (int) ($_POST['id'] ?? 0);
+        $id = $this->getInt('id', 'POST');
         if ($id <= 0) {
             $this->json(['success' => false, 'message' => 'ID inválido.']);
             return;
@@ -147,7 +139,7 @@ class ProdutoController
             $this->json(['success' => false, 'message' => 'Método não permitido.']);
             return;
         }
-        $id = (int) ($_POST['id'] ?? 0);
+        $id = $this->getInt('id', 'POST');
         if ($id <= 0) {
             $this->json(['success' => false, 'message' => 'ID inválido.']);
             return;
@@ -177,7 +169,7 @@ class ProdutoController
 
     public function listaFornecedores(): void
     {
-        $produtoId = (int) ($_GET['produto_id'] ?? 0);
+        $produtoId = $this->getInt('produto_id', 'GET');
         if ($produtoId <= 0) {
             $this->json(['success' => false, 'message' => 'ID do produto inválido.']);
             return;
@@ -188,7 +180,7 @@ class ProdutoController
 
     public function buscaFornecedoresParaVincular(): void
     {
-        $produtoId = (int) ($_GET['produto_id'] ?? 0);
+        $produtoId = $this->getInt('produto_id', 'GET');
         if ($produtoId <= 0) {
             $this->json(['success' => false, 'message' => 'ID do produto inválido.']);
             return;
@@ -204,10 +196,14 @@ class ProdutoController
             $this->json(['success' => false, 'message' => 'Método não permitido.']);
             return;
         }
-        $produtoId    = (int) ($_POST['produto_id'] ?? 0);
-        $fornecedorId = (int) ($_POST['fornecedor_id'] ?? 0);
+        $produtoId    = $this->getInt('produto_id', 'POST');
+        $fornecedorId = $this->getInt('fornecedor_id', 'POST');
         if ($produtoId <= 0 || $fornecedorId <= 0) {
             $this->json(['success' => false, 'message' => 'IDs inválidos.']);
+            return;
+        }
+        if (!$this->vinculoModel->fornecedorEstaAtivo($fornecedorId)) {
+            $this->json(['success' => false, 'message' => 'Não é possível vincular fornecedor inativo.']);
             return;
         }
         $ok = $this->vinculoModel->vincular($produtoId, $fornecedorId);
@@ -224,8 +220,8 @@ class ProdutoController
             $this->json(['success' => false, 'message' => 'Método não permitido.']);
             return;
         }
-        $produtoId    = (int) ($_POST['produto_id'] ?? 0);
-        $fornecedorId = (int) ($_POST['fornecedor_id'] ?? 0);
+        $produtoId    = $this->getInt('produto_id', 'POST');
+        $fornecedorId = $this->getInt('fornecedor_id', 'POST');
         if ($produtoId <= 0 || $fornecedorId <= 0) {
             $this->json(['success' => false, 'message' => 'IDs inválidos.']);
             return;
@@ -244,12 +240,43 @@ class ProdutoController
             $this->json(['success' => false, 'message' => 'Método não permitido.']);
             return;
         }
-        $produtoId = (int) ($_POST['produto_id'] ?? 0);
+        $produtoId = $this->getInt('produto_id', 'POST');
         if ($produtoId <= 0) {
             $this->json(['success' => false, 'message' => 'ID do produto inválido.']);
             return;
         }
         $qtd = $this->vinculoModel->desvincularTodos($produtoId);
         $this->json(['success' => true, 'message' => $qtd > 0 ? $qtd . ' vínculo(s) removido(s).' : 'Nenhum vínculo para remover.', 'count' => $qtd]);
+    }
+
+    public function definirFornecedorPrincipal(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->json(['success' => false, 'message' => 'Método não permitido.']);
+            return;
+        }
+        $produtoId    = $this->getInt('produto_id', 'POST');
+        $fornecedorId = $this->getInt('fornecedor_id', 'POST');
+        if ($produtoId <= 0 || $fornecedorId <= 0) {
+            $this->json(['success' => false, 'message' => 'IDs inválidos.']);
+            return;
+        }
+        $ok = $this->vinculoModel->setFornecedorPrincipal($produtoId, $fornecedorId);
+        if (!$ok) {
+            $this->json(['success' => false, 'message' => 'Vínculo não encontrado.']);
+            return;
+        }
+        $this->json(['success' => true, 'message' => 'Fornecedor definido como principal.']);
+    }
+
+    public function listaHistoricoVinculos(): void
+    {
+        $produtoId = $this->getInt('produto_id', 'GET');
+        if ($produtoId <= 0) {
+            $this->json(['success' => false, 'message' => 'ID do produto inválido.']);
+            return;
+        }
+        $historico = $this->vinculoModel->listarHistorico($produtoId, 30);
+        $this->json(['success' => true, 'data' => $historico]);
     }
 }

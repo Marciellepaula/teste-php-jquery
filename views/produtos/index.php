@@ -11,6 +11,9 @@ $indexUrl = ($baseUrl ? $baseUrl . '/' : '') . 'index.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Produtos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= $baseUrl ? htmlspecialchars($baseUrl) . '/css/style.css' : 'css/style.css' ?>">
 </head>
 <body>
@@ -97,41 +100,47 @@ $indexUrl = ($baseUrl ? $baseUrl . '/' : '') . 'index.php';
 
     <div id="modal-fornecedores-produto" class="modal modal-vinculos" role="dialog" aria-labelledby="modal-vinculos-titulo" aria-hidden="true">
         <div class="modal-backdrop" id="modal-vinculos-backdrop"></div>
-        <div class="modal-content modal-content-wide">
-            <div class="modal-header">
-                <h2 id="modal-vinculos-titulo">Fornecedores do produto</h2>
+        <div class="modal-content modal-content-wide modal-content-vinculos">
+            <div class="modal-header modal-header-vinculos">
+                <h2 id="modal-vinculos-titulo" class="modal-title-vinculos">Fornecedores do produto</h2>
                 <button type="button" class="modal-close" id="modal-vinculos-close" aria-label="Fechar">&times;</button>
             </div>
             <div class="modal-body modal-body-vinculos">
                 <input type="hidden" id="vinculos-produto-id" value="">
                 <div class="vinculos-painel">
-                    <div class="vinculos-lista-section">
-                        <div class="vinculos-section-header">
-                            <h3>Fornecedores vinculados</h3>
+                    <section class="vinculos-card vinculos-lista-section" aria-labelledby="vinculos-titulo-lista">
+                        <div class="vinculos-card-header">
+                            <h3 id="vinculos-titulo-lista" class="vinculos-card-title">Fornecedores vinculados</h3>
                             <button type="button" class="btn btn-small btn-secondary" id="btn-remover-todos-vinculos" disabled>Remover todos</button>
                         </div>
                         <div id="vinculos-lista-loading" class="loading-inline" style="display:none;"><span class="spinner"></span> Carregando…</div>
-                        <ul id="vinculos-lista" class="vinculos-lista"></ul>
-                        <p id="vinculos-lista-vazia" class="vinculos-vazia">Nenhum fornecedor vinculado.</p>
-                    </div>
-                    <div class="vinculos-add-section">
-                        <h3>Adicionar fornecedor</h3>
-                        <p class="vinculos-hint">Digite para buscar fornecedores disponíveis (busca dinâmica).</p>
-                        <div class="form-group">
-                            <label for="vinculos-busca">Buscar fornecedor</label>
-                            <input type="text" id="vinculos-busca" placeholder="Nome ou e-mail..." autocomplete="off">
+                        <ul id="vinculos-lista" class="vinculos-lista" aria-label="Lista de fornecedores vinculados"></ul>
+                        <p id="vinculos-lista-vazia" class="vinculos-vazia vinculos-vazia-card">Nenhum fornecedor vinculado.</p>
+                    </section>
+                    <section class="vinculos-card vinculos-add-section" aria-labelledby="vinculos-titulo-add">
+                        <h3 id="vinculos-titulo-add" class="vinculos-card-title">Adicionar fornecedor</h3>
+                        <p class="vinculos-hint">Busca por nome ou e-mail (apenas ativos e ainda não vinculados).</p>
+                        <div class="form-group form-group-compact">
+                            <label for="vinculos-busca" class="sr-only">Buscar fornecedor</label>
+                            <input type="text" id="vinculos-busca" class="input-search" placeholder="Nome ou e-mail..." autocomplete="off">
                         </div>
                         <div id="vinculos-busca-loading" class="loading-inline" style="display:none;"><span class="spinner"></span> Buscando…</div>
-                        <ul id="vinculos-resultados" class="vinculos-resultados"></ul>
-                        <p id="vinculos-resultados-vazia" class="vinculos-vazia" style="display:none;">Nenhum resultado ou já vinculados.</p>
-                    </div>
+                        <ul id="vinculos-resultados" class="vinculos-resultados" aria-label="Resultados da busca"></ul>
+                        <p id="vinculos-resultados-vazia" class="vinculos-vazia vinculos-vazia-card" style="display:none;">Nenhum resultado ou já vinculados.</p>
+                    </section>
                 </div>
-                <div id="vinculos-mensagem" class="mensagem mensagem-inline" role="alert"></div>
+                <div id="vinculos-mensagem" class="mensagem mensagem-inline vinculos-mensagem" role="alert"></div>
+                <section class="vinculos-card vinculos-historico-section" aria-labelledby="vinculos-titulo-historico">
+                    <h3 id="vinculos-titulo-historico" class="vinculos-card-title">Histórico de vínculos</h3>
+                    <div id="vinculos-historico-loading" class="loading-inline" style="display:none;"><span class="spinner"></span> Carregando…</div>
+                    <ul id="vinculos-historico-lista" class="vinculos-historico-lista" aria-label="Histórico de ações"></ul>
+                    <p id="vinculos-historico-vazia" class="vinculos-vazia vinculos-vazia-card vinculos-historico-vazia-texto">Nenhum registro no histórico. Vincule ou desvincule fornecedores para gerar registros (é necessário rodar a migration do banco: sql/migration_opcao_b.sql).</p>
+                </section>
             </div>
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="<?= $baseUrl ? htmlspecialchars($baseUrl) . '/js/jquery-4.0.0.js' : 'js/jquery-4.0.0.js' ?>"></script>
     <script>
         window.API_PRODUTO = {
             lista: '<?= $apiBase ?>&action=lista',
@@ -143,7 +152,9 @@ $indexUrl = ($baseUrl ? $baseUrl . '/' : '') . 'index.php';
             buscaFornecedoresParaVincular: '<?= $apiBase ?>&action=buscaFornecedoresParaVincular',
             vincularFornecedor: '<?= $apiBase ?>&action=vincularFornecedor',
             desvincularFornecedor: '<?= $apiBase ?>&action=desvincularFornecedor',
-            desvincularTodosFornecedores: '<?= $apiBase ?>&action=desvincularTodosFornecedores'
+            desvincularTodosFornecedores: '<?= $apiBase ?>&action=desvincularTodosFornecedores',
+            definirFornecedorPrincipal: '<?= $apiBase ?>&action=definirFornecedorPrincipal',
+            listaHistoricoVinculos: '<?= $apiBase ?>&action=listaHistoricoVinculos'
         };
     </script>
     <script src="<?= $baseUrl ? htmlspecialchars($baseUrl) . '/js/produtos.js' : 'js/produtos.js' ?>"></script>
