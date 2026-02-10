@@ -15,21 +15,48 @@ Gerencia **Fornecedores**, **Produtos** e o vínculo **N:N** entre eles.
 
 ## Banco de dados
 
-1. Crie o banco e importe o schema:
+**Opção 1 – Um único arquivo (recomendado no Windows)**  
+O arquivo `sql/install.sql` cria o banco e todas as tabelas. No terminal (cmd, na pasta do projeto):
+
+```cmd
+mysql -u root -p < sql\install.sql
+```
+
+**Opção 2 – Dois comandos (Linux/WSL)**
 
 ```bash
 mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS teste_php_jquery CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 mysql -u root -p teste_php_jquery < sql/schema.sql
 ```
 
-2. Ajuste usuário e senha em `config/database.php` (DB_USER, DB_PASS, DB_NAME).
+**Opção 3 – MySQL Workbench (Windows)**  
+Abra o MySQL Workbench → conecte ao servidor → File → Open SQL Script → escolha `sql/install.sql` → execute (raio).
+
+**Opção 4 – phpMyAdmin (XAMPP/Laragon/etc.)**  
+Acesse phpMyAdmin → Aba SQL → copie e cole o conteúdo de `sql/install.sql` → Executar.
+
+Ajuste usuário e senha em `config/database.php` (DB_USER, DB_PASS, DB_NAME).
 
 ## Como rodar
 
-- **Opção A:** Document root do servidor (Apache/Nginx) apontando para a pasta `public/`.  
-  Acesse: `http://localhost/?controller=fornecedor&action=index`
+**Opção 1 – Docker Compose (MySQL + PHP 7.4)**
 
-- **Opção B:** Servidor embutido PHP (na raiz do projeto):
+Na pasta do projeto:
+
+```bash
+docker compose up -d
+```
+
+Acesse: **http://localhost:8080/?controller=fornecedor&action=index**
+
+O MySQL sobe na porta 3306 e executa `sql/install.sql` na primeira inicialização. A aplicação usa usuário `app` / senha `app` (definidos no `docker-compose.yml`). Para parar: `docker compose down`.
+
+---
+
+**Opção 2 – Sem Docker:** document root do servidor (Apache/Nginx) apontando para a pasta `public/`.  
+Acesse: `http://localhost/?controller=fornecedor&action=index`
+
+**Opção 3 – Servidor embutido PHP (na raiz do projeto):**
 
 ```bash
 cd public && php -S localhost:8080
