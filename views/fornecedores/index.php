@@ -3,6 +3,7 @@ $fornecedores = $fornecedores ?? [];
 $baseUrl = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/');
 $apiBase = ($baseUrl ? $baseUrl . '/' : '') . 'index.php?controller=fornecedor';
 $indexUrl = ($baseUrl ? $baseUrl . '/' : '') . 'index.php';
+$cssUrl = $baseUrl ? $baseUrl . '/css/style.css' : 'css/style.css';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -10,94 +11,98 @@ $indexUrl = ($baseUrl ? $baseUrl . '/' : '') . 'index.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fornecedores</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= $baseUrl ? htmlspecialchars($baseUrl) . '/css/style.css' : 'css/style.css' ?>">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="<?= htmlspecialchars($cssUrl) ?>">
 </head>
-<body>
-    <div class="container">
-        <nav class="page-nav">
-            <a href="<?= htmlspecialchars($indexUrl) ?>?controller=fornecedor&action=index" class="active">Fornecedores</a>
-            <a href="<?= htmlspecialchars($indexUrl) ?>?controller=produto&action=index">Produtos</a>
-        </nav>
-        <header class="page-header">
-            <h1>Fornecedores</h1>
+<body class="bg-light">
+    <div class="container py-4">
+        <ul class="nav nav-pills mb-4">
+            <li class="nav-item"><a class="nav-link active" href="<?= htmlspecialchars($indexUrl) ?>?controller=fornecedor&action=index">Fornecedores</a></li>
+            <li class="nav-item"><a class="nav-link" href="<?= htmlspecialchars($indexUrl) ?>?controller=produto&action=index">Produtos</a></li>
+        </ul>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="h4 mb-0">Fornecedores</h1>
             <button type="button" class="btn btn-primary" id="btn-novo-fornecedor">Novo fornecedor</button>
-        </header>
+        </div>
 
-        <div id="mensagem" class="mensagem" role="alert" aria-live="polite"></div>
+        <div id="mensagem" class="alert d-none" role="alert"></div>
 
         <div class="card">
-            <table class="tabela" id="tabela-fornecedores">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nome</th>
-                        <th>CNPJ</th>
-                        <th>E-mail</th>
-                        <th>Telefone</th>
-                        <th>Status</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($fornecedores as $f): ?>
-                    <tr data-id="<?= (int) $f['id'] ?>">
-                        <td><?= (int) $f['id'] ?></td>
-                        <td><?= htmlspecialchars($f['nome']) ?></td>
-                        <td><?= htmlspecialchars($f['cnpj'] ?? '') ?></td>
-                        <td><?= htmlspecialchars($f['email'] ?? '') ?></td>
-                        <td><?= htmlspecialchars($f['telefone'] ?? '') ?></td>
-                        <td><span class="badge badge-<?= $f['status'] === 'A' ? 'ativo' : 'inativo' ?>"><?= $f['status'] === 'A' ? 'Ativo' : 'Inativo' ?></span></td>
-                        <td>
-                            <button type="button" class="btn btn-small btn-editar" data-id="<?= (int) $f['id'] ?>">Editar</button>
-                            <button type="button" class="btn btn-small btn-excluir" data-id="<?= (int) $f['id'] ?>">Excluir</button>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-            <p id="tabela-vazia" class="tabela-vazia" style="<?= count($fornecedores) > 0 ? 'display:none' : '' ?>">Nenhum fornecedor cadastrado.</p>
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover mb-0" id="tabela-fornecedores">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>CNPJ</th>
+                            <th>E-mail</th>
+                            <th>Telefone</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($fornecedores as $f): ?>
+                        <tr data-id="<?= (int) $f['id'] ?>">
+                            <td><?= (int) $f['id'] ?></td>
+                            <td><?= htmlspecialchars($f['nome']) ?></td>
+                            <td><?= htmlspecialchars($f['cnpj'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($f['email'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($f['telefone'] ?? '') ?></td>
+                            <td><span class="badge bg-<?= $f['status'] === 'A' ? 'success' : 'danger' ?>"><?= $f['status'] === 'A' ? 'Ativo' : 'Inativo' ?></span></td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-success btn-editar" data-id="<?= (int) $f['id'] ?>">Editar</button>
+                                <button type="button" class="btn btn-sm btn-danger btn-excluir" data-id="<?= (int) $f['id'] ?>">Excluir</button>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+                <p id="tabela-vazia" class="text-muted text-center py-4 mb-0" style="<?= count($fornecedores) > 0 ? 'display:none' : '' ?>">Nenhum fornecedor cadastrado.</p>
+            </div>
         </div>
     </div>
 
-    <div id="modal-fornecedor" class="modal" role="dialog" aria-labelledby="modal-titulo" aria-hidden="true">
+    <div id="modal-fornecedor" class="modal" tabindex="-1" role="dialog" aria-labelledby="modal-titulo" aria-hidden="true">
         <div class="modal-backdrop" id="modal-backdrop"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modal-titulo">Novo fornecedor</h2>
-                <button type="button" class="modal-close" id="modal-close" aria-label="Fechar">&times;</button>
-            </div>
-            <form id="form-fornecedor" class="modal-body">
-                <input type="hidden" name="id" id="fornecedor-id" value="">
-                <div class="form-group">
-                    <label for="nome">Nome <span class="obrigatorio">*</span></label>
-                    <input type="text" id="nome" name="nome" required maxlength="150" placeholder="Razão social">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-titulo" class="modal-title h5 mb-0">Novo fornecedor</h2>
+                    <button type="button" class="btn-close" id="modal-close" aria-label="Fechar"></button>
                 </div>
-                <div class="form-group">
-                    <label for="cnpj">CNPJ</label>
-                    <input type="text" id="cnpj" name="cnpj" maxlength="18" placeholder="00.000.000/0000-00">
-                </div>
-                <div class="form-group">
-                    <label for="email">E-mail</label>
-                    <input type="email" id="email" name="email" maxlength="100" placeholder="contato@exemplo.com">
-                </div>
-                <div class="form-group">
-                    <label for="telefone">Telefone</label>
-                    <input type="text" id="telefone" name="telefone" maxlength="20" placeholder="(00) 00000-0000">
-                </div>
-                <div class="form-group">
-                    <label for="status">Status</label>
-                    <select id="status" name="status">
-                        <option value="A">Ativo</option>
-                        <option value="I">Inativo</option>
-                    </select>
-                </div>
-            </form>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="btn-cancelar">Cancelar</button>
-                <button type="submit" form="form-fornecedor" class="btn btn-primary" id="btn-salvar">Salvar</button>
+                <form id="form-fornecedor">
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="fornecedor-id" value="">
+                        <div class="mb-3">
+                            <label for="nome" class="form-label">Nome <span class="text-danger">*</span></label>
+                            <input type="text" id="nome" name="nome" class="form-control" required maxlength="150" placeholder="Razão social">
+                        </div>
+                        <div class="mb-3">
+                            <label for="cnpj" class="form-label">CNPJ</label>
+                            <input type="text" id="cnpj" name="cnpj" class="form-control" maxlength="18" placeholder="00.000.000/0000-00">
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">E-mail</label>
+                            <input type="email" id="email" name="email" class="form-control" maxlength="100" placeholder="contato@exemplo.com">
+                        </div>
+                        <div class="mb-3">
+                            <label for="telefone" class="form-label">Telefone</label>
+                            <input type="text" id="telefone" name="telefone" class="form-control" maxlength="20" placeholder="(00) 00000-0000">
+                        </div>
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select id="status" name="status" class="form-select">
+                                <option value="A">Ativo</option>
+                                <option value="I">Inativo</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="btn-cancelar">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" id="btn-salvar">Salvar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

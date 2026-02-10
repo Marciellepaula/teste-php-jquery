@@ -1,9 +1,9 @@
 <?php
-
 $produtos = $produtos ?? [];
 $baseUrl = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/');
 $apiBase = ($baseUrl ? $baseUrl . '/' : '') . 'index.php?controller=produto';
 $indexUrl = ($baseUrl ? $baseUrl . '/' : '') . 'index.php';
+$cssUrl = $baseUrl ? $baseUrl . '/css/style.css' : 'css/style.css';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -11,131 +11,144 @@ $indexUrl = ($baseUrl ? $baseUrl . '/' : '') . 'index.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Produtos</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= $baseUrl ? htmlspecialchars($baseUrl) . '/css/style.css' : 'css/style.css' ?>">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="<?= htmlspecialchars($cssUrl) ?>">
 </head>
-<body>
-    <div class="container">
-        <nav class="page-nav">
-            <a href="<?= htmlspecialchars($indexUrl) ?>?controller=fornecedor&action=index">Fornecedores</a>
-            <a href="<?= htmlspecialchars($indexUrl) ?>?controller=produto&action=index" class="active">Produtos</a>
-        </nav>
-        <header class="page-header">
-            <h1>Produtos</h1>
+<body class="bg-light">
+    <div class="container py-4">
+        <ul class="nav nav-pills mb-4">
+            <li class="nav-item"><a class="nav-link" href="<?= htmlspecialchars($indexUrl) ?>?controller=fornecedor&action=index">Fornecedores</a></li>
+            <li class="nav-item"><a class="nav-link active" href="<?= htmlspecialchars($indexUrl) ?>?controller=produto&action=index">Produtos</a></li>
+        </ul>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="h4 mb-0">Produtos</h1>
             <button type="button" class="btn btn-primary" id="btn-novo-produto">Novo produto</button>
-        </header>
+        </div>
 
-        <div id="mensagem" class="mensagem" role="alert" aria-live="polite"></div>
+        <div id="mensagem" class="alert d-none" role="alert"></div>
 
         <div class="card">
-            <table class="tabela" id="tabela-produtos">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nome</th>
-                        <th>Descrição</th>
-                        <th>Código interno</th>
-                        <th>Status</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($produtos as $p): ?>
-                    <tr data-id="<?= (int) $p['id'] ?>">
-                        <td><?= (int) $p['id'] ?></td>
-                        <td><?= htmlspecialchars($p['nome']) ?></td>
-                        <td class="cell-descricao"><?= htmlspecialchars(mb_substr($p['descricao'] ?? '', 0, 60)) ?><?= mb_strlen($p['descricao'] ?? '') > 60 ? '…' : '' ?></td>
-                        <td><?= htmlspecialchars($p['codigo_interno'] ?? '') ?></td>
-                        <td><span class="badge badge-<?= $p['status'] === 'A' ? 'ativo' : 'inativo' ?>"><?= $p['status'] === 'A' ? 'Ativo' : 'Inativo' ?></span></td>
-                        <td>
-                            <button type="button" class="btn btn-small btn-fornecedores" data-id="<?= (int) $p['id'] ?>" data-nome="<?= htmlspecialchars($p['nome']) ?>">Fornecedores</button>
-                            <button type="button" class="btn btn-small btn-editar" data-id="<?= (int) $p['id'] ?>">Editar</button>
-                            <button type="button" class="btn btn-small btn-excluir" data-id="<?= (int) $p['id'] ?>">Excluir</button>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-            <p id="tabela-vazia" class="tabela-vazia" style="<?= count($produtos) > 0 ? 'display:none' : '' ?>">Nenhum produto cadastrado.</p>
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover mb-0" id="tabela-produtos">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Descrição</th>
+                            <th>Código interno</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($produtos as $p): ?>
+                        <tr data-id="<?= (int) $p['id'] ?>">
+                            <td><?= (int) $p['id'] ?></td>
+                            <td><?= htmlspecialchars($p['nome']) ?></td>
+                            <td class="text-truncate" style="max-width:200px"><?= htmlspecialchars(mb_substr($p['descricao'] ?? '', 0, 60)) ?><?= mb_strlen($p['descricao'] ?? '') > 60 ? '…' : '' ?></td>
+                            <td><?= htmlspecialchars($p['codigo_interno'] ?? '') ?></td>
+                            <td><span class="badge bg-<?= $p['status'] === 'A' ? 'success' : 'danger' ?>"><?= $p['status'] === 'A' ? 'Ativo' : 'Inativo' ?></span></td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-primary btn-fornecedores" data-id="<?= (int) $p['id'] ?>" data-nome="<?= htmlspecialchars($p['nome']) ?>">Fornecedores</button>
+                                <button type="button" class="btn btn-sm btn-success btn-editar" data-id="<?= (int) $p['id'] ?>">Editar</button>
+                                <button type="button" class="btn btn-sm btn-danger btn-excluir" data-id="<?= (int) $p['id'] ?>">Excluir</button>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+                <p id="tabela-vazia" class="text-muted text-center py-4 mb-0" style="<?= count($produtos) > 0 ? 'display:none' : '' ?>">Nenhum produto cadastrado.</p>
+            </div>
         </div>
     </div>
 
-    <div id="modal-produto" class="modal" role="dialog" aria-labelledby="modal-titulo" aria-hidden="true">
+    <div id="modal-produto" class="modal" tabindex="-1" role="dialog" aria-labelledby="modal-titulo" aria-hidden="true">
         <div class="modal-backdrop" id="modal-backdrop"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modal-titulo">Novo produto</h2>
-                <button type="button" class="modal-close" id="modal-close" aria-label="Fechar">&times;</button>
-            </div>
-            <form id="form-produto" class="modal-body">
-                <input type="hidden" name="id" id="produto-id" value="">
-                <div class="form-group">
-                    <label for="nome">Nome <span class="obrigatorio">*</span></label>
-                    <input type="text" id="nome" name="nome" required maxlength="150" placeholder="Nome do produto">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-titulo" class="modal-title h5 mb-0">Novo produto</h2>
+                    <button type="button" class="btn-close" id="modal-close" aria-label="Fechar"></button>
                 </div>
-                <div class="form-group">
-                    <label for="descricao">Descrição</label>
-                    <textarea id="descricao" name="descricao" rows="3" maxlength="2000" placeholder="Descrição opcional"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="codigo_interno">Código interno</label>
-                    <input type="text" id="codigo_interno" name="codigo_interno" maxlength="50" placeholder="Ex: PROD-001">
-                </div>
-                <div class="form-group">
-                    <label for="status">Status</label>
-                    <select id="status" name="status">
-                        <option value="A">Ativo</option>
-                        <option value="I">Inativo</option>
-                    </select>
-                </div>
-            </form>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="btn-cancelar">Cancelar</button>
-                <button type="submit" form="form-produto" class="btn btn-primary" id="btn-salvar">Salvar</button>
+                <form id="form-produto">
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="produto-id" value="">
+                        <div class="mb-3">
+                            <label for="nome" class="form-label">Nome <span class="text-danger">*</span></label>
+                            <input type="text" id="nome" name="nome" class="form-control" required maxlength="150" placeholder="Nome do produto">
+                        </div>
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label">Descrição</label>
+                            <textarea id="descricao" name="descricao" class="form-control" rows="3" maxlength="2000" placeholder="Descrição opcional"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="codigo_interno" class="form-label">Código interno</label>
+                            <input type="text" id="codigo_interno" name="codigo_interno" class="form-control" maxlength="50" placeholder="Ex: PROD-001">
+                        </div>
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select id="status" name="status" class="form-select">
+                                <option value="A">Ativo</option>
+                                <option value="I">Inativo</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="btn-cancelar">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" id="btn-salvar">Salvar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
-    <div id="modal-fornecedores-produto" class="modal modal-vinculos" role="dialog" aria-labelledby="modal-vinculos-titulo" aria-hidden="true">
+    <div id="modal-fornecedores-produto" class="modal" tabindex="-1" role="dialog" aria-labelledby="modal-vinculos-titulo" aria-hidden="true">
         <div class="modal-backdrop" id="modal-vinculos-backdrop"></div>
-        <div class="modal-content modal-content-wide modal-content-vinculos">
-            <div class="modal-header modal-header-vinculos">
-                <h2 id="modal-vinculos-titulo" class="modal-title-vinculos">Fornecedores do produto</h2>
-                <button type="button" class="modal-close" id="modal-vinculos-close" aria-label="Fechar">&times;</button>
-            </div>
-            <div class="modal-body modal-body-vinculos">
-                <input type="hidden" id="vinculos-produto-id" value="">
-                <div class="vinculos-painel">
-                    <section class="vinculos-card vinculos-lista-section" aria-labelledby="vinculos-titulo-lista">
-                        <div class="vinculos-card-header">
-                            <h3 id="vinculos-titulo-lista" class="vinculos-card-title">Fornecedores vinculados</h3>
-                            <button type="button" class="btn btn-small btn-secondary" id="btn-remover-todos-vinculos" disabled>Remover todos</button>
-                        </div>
-                        <div id="vinculos-lista-loading" class="loading-inline" style="display:none;"><span class="spinner"></span> Carregando…</div>
-                        <ul id="vinculos-lista" class="vinculos-lista" aria-label="Lista de fornecedores vinculados"></ul>
-                        <p id="vinculos-lista-vazia" class="vinculos-vazia vinculos-vazia-card">Nenhum fornecedor vinculado.</p>
-                    </section>
-                    <section class="vinculos-card vinculos-add-section" aria-labelledby="vinculos-titulo-add">
-                        <h3 id="vinculos-titulo-add" class="vinculos-card-title">Adicionar fornecedor</h3>
-                        <p class="vinculos-hint">Busca por nome ou e-mail (apenas ativos e ainda não vinculados).</p>
-                        <div class="form-group form-group-compact">
-                            <label for="vinculos-busca" class="sr-only">Buscar fornecedor</label>
-                            <input type="text" id="vinculos-busca" class="input-search" placeholder="Nome ou e-mail..." autocomplete="off">
-                        </div>
-                        <div id="vinculos-busca-loading" class="loading-inline" style="display:none;"><span class="spinner"></span> Buscando…</div>
-                        <ul id="vinculos-resultados" class="vinculos-resultados" aria-label="Resultados da busca"></ul>
-                        <p id="vinculos-resultados-vazia" class="vinculos-vazia vinculos-vazia-card" style="display:none;">Nenhum resultado ou já vinculados.</p>
-                    </section>
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-vinculos-titulo" class="modal-title h5 mb-0">Fornecedores do produto</h2>
+                    <button type="button" class="btn-close" id="modal-vinculos-close" aria-label="Fechar"></button>
                 </div>
-                <div id="vinculos-mensagem" class="mensagem mensagem-inline vinculos-mensagem" role="alert"></div>
-                <section class="vinculos-card vinculos-historico-section" aria-labelledby="vinculos-titulo-historico">
-                    <h3 id="vinculos-titulo-historico" class="vinculos-card-title">Histórico de vínculos</h3>
-                    <div id="vinculos-historico-loading" class="loading-inline" style="display:none;"><span class="spinner"></span> Carregando…</div>
-                    <ul id="vinculos-historico-lista" class="vinculos-historico-lista" aria-label="Histórico de ações"></ul>
-                    <p id="vinculos-historico-vazia" class="vinculos-vazia vinculos-vazia-card vinculos-historico-vazia-texto">Nenhum registro no histórico. Vincule ou desvincule fornecedores para gerar registros (é necessário rodar a migration do banco: sql/migration_opcao_b.sql).</p>
-                </section>
+                <div class="modal-body">
+                    <input type="hidden" id="vinculos-produto-id" value="">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h3 class="h6 mb-0">Fornecedores vinculados</h3>
+                                        <button type="button" class="btn btn-sm btn-secondary" id="btn-remover-todos-vinculos" disabled>Remover todos</button>
+                                    </div>
+                                    <div id="vinculos-lista-loading" class="small text-muted" style="display:none;"><span class="spinner"></span> Carregando…</div>
+                                    <ul id="vinculos-lista" class="list-group list-group-flush" style="max-height:200px;overflow-y:auto"></ul>
+                                    <p id="vinculos-lista-vazia" class="small text-muted mb-0 mt-2">Nenhum fornecedor vinculado.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h3 class="h6 mb-2">Adicionar fornecedor</h3>
+                                    <p class="small text-muted mb-2">Busca por nome ou e-mail (apenas ativos e ainda não vinculados).</p>
+                                    <input type="text" id="vinculos-busca" class="form-control form-control-sm mb-2" placeholder="Nome ou e-mail..." autocomplete="off">
+                                    <div id="vinculos-busca-loading" class="small text-muted" style="display:none;"><span class="spinner"></span> Buscando…</div>
+                                    <ul id="vinculos-resultados" class="list-group list-group-flush" style="max-height:160px;overflow-y:auto"></ul>
+                                    <p id="vinculos-resultados-vazia" class="small text-muted mb-0 mt-2" style="display:none;">Nenhum resultado ou já vinculados.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="vinculos-mensagem" class="alert mt-3 d-none" role="alert"></div>
+                    <div class="card mt-3">
+                        <div class="card-body">
+                            <h3 class="h6 mb-2">Histórico de vínculos</h3>
+                            <div id="vinculos-historico-loading" class="small text-muted" style="display:none;"><span class="spinner"></span> Carregando…</div>
+                            <ul id="vinculos-historico-lista" class="list-group list-group-flush small" style="max-height:140px;overflow-y:auto"></ul>
+                            <p id="vinculos-historico-vazia" class="small text-muted mb-0 mt-2">Nenhum registro no histórico. Vincule ou desvincule fornecedores para gerar registros (é necessário rodar a migration do banco: sql/migration_opcao_b.sql).</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

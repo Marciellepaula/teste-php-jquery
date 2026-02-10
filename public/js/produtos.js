@@ -10,25 +10,23 @@
 
     function mostrarMensagem(texto, tipo) {
         tipo = tipo || 'sucesso';
-        $mensagem.removeClass('sucesso erro').addClass('visivel ' + tipo).text(texto);
-        setTimeout(function () {
-            $mensagem.removeClass('visivel');
-        }, 5000);
+        $mensagem.removeClass('alert-success alert-danger d-none').addClass('alert-' + (tipo === 'erro' ? 'danger' : 'success')).text(texto).removeClass('d-none');
+        setTimeout(function () { $mensagem.addClass('d-none'); }, 5000);
     }
 
     function abrirModal(titulo) {
         $modalTitulo.text(titulo);
         $form[0].reset();
         $('#produto-id').val('');
-        $modal.attr('aria-hidden', 'false').addClass('aberto');
+        $modal.attr('aria-hidden', 'false').addClass('show');
     }
 
     function fecharModal() {
-        $modal.attr('aria-hidden', 'true').removeClass('aberto');
+        $modal.attr('aria-hidden', 'true').removeClass('show');
     }
 
     function removerInvalidos() {
-        $form.find('input, select, textarea').removeClass('invalido');
+        $form.find('input, select, textarea').removeClass('is-invalid');
     }
 
     function truncar(str, maxLen) {
@@ -46,17 +44,18 @@
         }).done(function (res) {
             if (!res.success || !res.data) return;
             var rows = res.data.map(function (p) {
-                var statusBadge = p.status === 'A' ? '<span class="badge badge-ativo">Ativo</span>' : '<span class="badge badge-inativo">Inativo</span>';
+                var statusBadge = p.status === 'A' ? '<span class="badge bg-success">Ativo</span>' : '<span class="badge bg-danger">Inativo</span>';
                 var descricao = truncar(p.descricao, 60);
                 return '<tr data-id="' + p.id + '">' +
                     '<td>' + p.id + '</td>' +
                     '<td>' + escapeHtml(p.nome) + '</td>' +
-                    '<td class="cell-descricao">' + escapeHtml(descricao) + '</td>' +
+                    '<td class="text-truncate" style="max-width:200px">' + escapeHtml(descricao) + '</td>' +
                     '<td>' + escapeHtml(p.codigo_interno || '') + '</td>' +
                     '<td>' + statusBadge + '</td>' +
                     '<td>' +
-                    '<button type="button" class="btn btn-small btn-editar" data-id="' + p.id + '">Editar</button> ' +
-                    '<button type="button" class="btn btn-small btn-excluir" data-id="' + p.id + '">Excluir</button>' +
+                    '<button type="button" class="btn btn-sm btn-primary btn-fornecedores" data-id="' + p.id + '" data-nome="' + escapeHtml(p.nome) + '">Fornecedores</button> ' +
+                    '<button type="button" class="btn btn-sm btn-success btn-editar" data-id="' + p.id + '">Editar</button> ' +
+                    '<button type="button" class="btn btn-sm btn-danger btn-excluir" data-id="' + p.id + '">Excluir</button>' +
                     '</td></tr>';
             });
             $tbody.html(rows.join(''));
@@ -104,7 +103,7 @@
             $('#codigo_interno').val(d.codigo_interno || '');
             $('#status').val(d.status || 'A');
             $modalTitulo.text('Editar produto');
-            $modal.attr('aria-hidden', 'false').addClass('aberto');
+            $modal.attr('aria-hidden', 'false').addClass('show');
         }).fail(function () {
             mostrarMensagem('Erro ao carregar produto.', 'erro');
         });
@@ -152,7 +151,7 @@
                 mostrarMensagem(res.message || 'Erro ao salvar.', 'erro');
                 if (res.errors && res.errors.length) {
                     res.errors.forEach(function (field) {
-                        $form.find('[name="' + field + '"]').addClass('invalido');
+                        $form.find('[name="' + field + '"]').addClass('is-invalid');
                     });
                 }
             }
@@ -179,8 +178,8 @@
     var DEBOUNCE_MS = 350;
 
     function mostrarVinculosMensagem(texto, tipo) {
-        $vinculosMensagem.removeClass('sucesso erro visivel').addClass('visivel ' + (tipo || 'sucesso')).text(texto);
-        setTimeout(function () { $vinculosMensagem.removeClass('visivel'); }, 4000);
+        $vinculosMensagem.removeClass('alert-success alert-danger d-none').addClass('alert-' + (tipo === 'erro' ? 'danger' : 'success')).text(texto).removeClass('d-none');
+        setTimeout(function () { $vinculosMensagem.addClass('d-none'); }, 4000);
     }
 
     function carregarFornecedoresVinculados(produtoId) {
@@ -202,13 +201,13 @@
             }
             var itens = res.data.map(function (f) {
                 var principal = f.principal === 1 || f.principal === true;
-                var principalBadge = principal ? ' <span class="badge badge-principal">Principal</span>' : '';
-                var btnPrincipal = principal ? '' : ' <button type="button" class="btn btn-small btn-secondary btn-definir-principal" data-fornecedor-id="' + f.id + '">Definir como principal</button>';
-                var liClass = principal ? ' class="vinculo-item-principal"' : '';
-                return '<li data-fornecedor-id="' + f.id + '"' + liClass + '>' +
-                    '<span>' + escapeHtml(f.nome) + (f.email ? ' <small>(' + escapeHtml(f.email) + ')</small>' : '') + principalBadge + '</span>' +
-                    '<span class="vinculo-acoes">' + btnPrincipal +
-                    ' <button type="button" class="btn btn-small btn-excluir btn-remover-vinculo" data-fornecedor-id="' + f.id + '">Remover</button></span>' +
+                var principalBadge = principal ? ' <span class="badge bg-primary">Principal</span>' : '';
+                var btnPrincipal = principal ? '' : ' <button type="button" class="btn btn-sm btn-secondary btn-definir-principal" data-fornecedor-id="' + f.id + '">Definir como principal</button>';
+                var liClass = 'list-group-item d-flex justify-content-between align-items-center' + (principal ? ' bg-light' : '');
+                return '<li class="' + liClass + '" data-fornecedor-id="' + f.id + '">' +
+                    '<span>' + escapeHtml(f.nome) + (f.email ? ' <small class="text-muted">(' + escapeHtml(f.email) + ')</small>' : '') + principalBadge + '</span>' +
+                    '<span>' + btnPrincipal +
+                    ' <button type="button" class="btn btn-sm btn-danger btn-remover-vinculo" data-fornecedor-id="' + f.id + '">Remover</button></span>' +
                     '</li>';
             });
             $vinculosLista.html(itens.join('')).show();
@@ -237,9 +236,9 @@
                 return;
             }
             var itens = res.data.map(function (f) {
-                return '<li data-fornecedor-id="' + f.id + '">' +
-                    '<span>' + escapeHtml(f.nome) + (f.email ? ' (' + escapeHtml(f.email) + ')' : '') + '</span>' +
-                    '<button type="button" class="btn btn-small btn-primary btn-add-vincular" data-fornecedor-id="' + f.id + '" data-nome="' + escapeHtml(f.nome) + '">Adicionar</button>' +
+                return '<li class="list-group-item d-flex justify-content-between align-items-center" data-fornecedor-id="' + f.id + '">' +
+                    '<span>' + escapeHtml(f.nome) + (f.email ? ' <small class="text-muted">(' + escapeHtml(f.email) + ')</small>' : '') + '</span>' +
+                    '<button type="button" class="btn btn-sm btn-primary btn-add-vincular" data-fornecedor-id="' + f.id + '" data-nome="' + escapeHtml(f.nome) + '">Adicionar</button>' +
                     '</li>';
             });
             $vinculosResultadosVazia.hide();
@@ -278,18 +277,18 @@
         }).done(function (res) {
             $vinculosHistoricoLoading.hide();
             if (!res.success || !res.data || res.data.length === 0) {
-                $vinculosHistoricoVazia.removeClass('vinculos-historico-erro').text(MSG_HISTORICO_VAZIO).show();
+                $vinculosHistoricoVazia.removeClass('text-danger').text(MSG_HISTORICO_VAZIO).show();
                 return;
             }
             var itens = res.data.map(function (h) {
                 var texto = h.acao === 'vinculado' ? 'Vinculado' : (h.acao === 'desvinculado' ? 'Desvinculado' : h.acao);
-                return '<li>' + escapeHtml(h.fornecedor_nome) + ' – ' + texto + ' em ' + formatarDataBr(h.created_at) + '</li>';
+                return '<li class="list-group-item">' + escapeHtml(h.fornecedor_nome) + ' – ' + texto + ' em ' + formatarDataBr(h.created_at) + '</li>';
             });
             $vinculosHistoricoVazia.hide();
             $vinculosHistoricoLista.html(itens.join('')).show();
         }).fail(function () {
             $vinculosHistoricoLoading.hide();
-            $vinculosHistoricoVazia.text(MSG_HISTORICO_ERRO).addClass('vinculos-historico-erro').show();
+            $vinculosHistoricoVazia.text(MSG_HISTORICO_ERRO).addClass('text-danger').show();
         });
     }
 
@@ -299,20 +298,22 @@
         $vinculosBusca.val('');
         $vinculosResultados.empty().hide();
         $vinculosResultadosVazia.hide();
-        $vinculosMensagem.removeClass('visivel');
-        $modalVinculos.attr('aria-hidden', 'false').addClass('aberto');
+        $vinculosMensagem.addClass('d-none');
+        $modalVinculos.attr('aria-hidden', 'false').addClass('show');
         carregarFornecedoresVinculados(produtoId);
         buscarFornecedoresParaVincular(produtoId, '');
         carregarHistoricoVinculos(produtoId);
     }
 
     function fecharModalFornecedores() {
-        $modalVinculos.attr('aria-hidden', 'true').removeClass('aberto');
+        $modalVinculos.attr('aria-hidden', 'true').removeClass('show');
     }
 
-    $(document).on('click', '.btn-fornecedores', function () {
+    $(document).on('click', '.btn-fornecedores', function (e) {
+        e.preventDefault();
         var id = $(this).data('id');
         var nome = $(this).data('nome') || 'ID ' + id;
+        if (!id) return;
         abrirModalFornecedores(id, nome);
     });
 
