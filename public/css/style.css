@@ -1,4 +1,3 @@
-/* Reset e base */
 *,
 *::before,
 *::after {
@@ -20,7 +19,6 @@ body {
     padding: 1.5rem;
 }
 
-/* Header */
 .page-header {
     display: flex;
     justify-content: space-between;
@@ -36,7 +34,6 @@ body {
     font-weight: 600;
 }
 
-/* Navegação entre módulos */
 .page-nav {
     margin-bottom: 1rem;
     padding-bottom: 0.75rem;
@@ -59,7 +56,6 @@ body {
     pointer-events: none;
 }
 
-/* Botões */
 .btn {
     display: inline-block;
     padding: 0.5rem 1rem;
@@ -128,7 +124,6 @@ body {
     background: #0b5ed7;
 }
 
-/* Mensagem de feedback */
 .mensagem {
     padding: 0.75rem 1rem;
     margin-bottom: 1rem;
@@ -152,7 +147,6 @@ body {
     border: 1px solid #f5c2c7;
 }
 
-/* Card e tabela */
 .card {
     background: #fff;
     border-radius: 8px;
@@ -188,7 +182,6 @@ body {
     color: #6c757d;
 }
 
-/* Badge status */
 .badge {
     display: inline-block;
     padding: 0.2rem 0.5rem;
@@ -207,7 +200,6 @@ body {
     color: #842029;
 }
 
-/* Modal */
 .modal {
     position: fixed;
     inset: 0;
@@ -292,7 +284,6 @@ body {
     background: #f8f9fa;
 }
 
-/* Formulário */
 .form-group {
     margin-bottom: 1rem;
 }
@@ -343,7 +334,6 @@ body {
     text-overflow: ellipsis;
 }
 
-/* Modal de vínculos produto × fornecedor */
 .modal-content-wide {
     max-width: 640px;
 }

@@ -1,16 +1,10 @@
 <?php
-/**
- * Front Controller: roteia requisições por controller e action.
- * Ex.: index.php?controller=fornecedor&action=index
- *      index.php?controller=fornecedor&action=lista (AJAX)
- */
 
 declare(strict_types=1);
 
 $controllerName = $_GET['controller'] ?? 'fornecedor';
 $actionName     = $_GET['action'] ?? 'index';
 
-// Normaliza: "fornecedor" -> "FornecedorController"
 $className = ucfirst(strtolower($controllerName)) . 'Controller';
 $action    = strtolower($actionName);
 

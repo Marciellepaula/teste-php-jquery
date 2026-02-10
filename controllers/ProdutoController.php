@@ -1,8 +1,4 @@
 <?php
-/**
- * Controller: regra de negócio e orquestração para Produtos.
- * Valida entrada, chama Model e retorna JSON (AJAX) ou carrega View.
- */
 
 require_once __DIR__ . '/../models/ProdutoModel.php';
 require_once __DIR__ . '/../models/FornecedorProdutoModel.php';
@@ -18,19 +14,12 @@ class ProdutoController
         $this->vinculoModel = new FornecedorProdutoModel();
     }
 
-    /**
-     * Responde em JSON para o front.
-     */
     private function json(array $data): void
     {
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    /**
-     * Validação básica dos campos do produto.
-     * @return array Lista de erros (nomes dos campos)
-     */
     private function validar(array $dados, ?int $idParaEdicao = null): array
     {
         $errors = [];
@@ -45,9 +34,6 @@ class ProdutoController
         return $errors;
     }
 
-    /**
-     * Normaliza dados vindos do POST para o Model.
-     */
     private function normalizarPost(): array
     {
         return [
@@ -58,9 +44,6 @@ class ProdutoController
         ];
     }
 
-    /**
-     * Lista produtos (página HTML).
-     */
     public function index(): void
     {
         $produtos = $this->model->listar(null);
@@ -72,10 +55,6 @@ class ProdutoController
         }
     }
 
-    /**
-     * API: retorna lista de produtos em JSON (para AJAX).
-     * GET status: 'A', 'I' ou omitir = todos.
-     */
     public function lista(): void
     {
         $status = null;
@@ -88,9 +67,6 @@ class ProdutoController
         $this->json(['success' => true, 'data' => $produtos]);
     }
 
-    /**
-     * API: retorna um produto por ID em JSON.
-     */
     public function buscar(): void
     {
         $id = (int) ($_GET['id'] ?? 0);
@@ -106,9 +82,6 @@ class ProdutoController
         $this->json(['success' => true, 'data' => $produto]);
     }
 
-    /**
-     * API: cadastra novo produto (POST). Retorno JSON.
-     */
     public function salvar(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -134,9 +107,6 @@ class ProdutoController
         }
     }
 
-    /**
-     * API: atualiza produto existente (POST). Retorno JSON.
-     */
     public function atualizar(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -171,9 +141,6 @@ class ProdutoController
         }
     }
 
-    /**
-     * API: exclui produto (POST). Retorno JSON.
-     */
     public function excluir(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -208,12 +175,6 @@ class ProdutoController
         return 'Verifique os campos.';
     }
 
-    // ---------- Vínculo produto × fornecedor ----------
-
-    /**
-     * API: lista fornecedores vinculados a um produto (JSON).
-     * GET produto_id
-     */
     public function listaFornecedores(): void
     {
         $produtoId = (int) ($_GET['produto_id'] ?? 0);
@@ -225,10 +186,6 @@ class ProdutoController
         $this->json(['success' => true, 'data' => $fornecedores]);
     }
 
-    /**
-     * API: busca fornecedores não vinculados ao produto (para adicionar). Busca dinâmica.
-     * GET produto_id, q (termo de busca)
-     */
     public function buscaFornecedoresParaVincular(): void
     {
         $produtoId = (int) ($_GET['produto_id'] ?? 0);
@@ -241,9 +198,6 @@ class ProdutoController
         $this->json(['success' => true, 'data' => $fornecedores]);
     }
 
-    /**
-     * API: cria vínculo produto-fornecedor (POST).
-     */
     public function vincularFornecedor(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -264,9 +218,6 @@ class ProdutoController
         $this->json(['success' => true, 'message' => 'Fornecedor vinculado com sucesso.']);
     }
 
-    /**
-     * API: remove vínculo entre produto e fornecedor (POST).
-     */
     public function desvincularFornecedor(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -287,9 +238,6 @@ class ProdutoController
         $this->json(['success' => true, 'message' => 'Vínculo removido.']);
     }
 
-    /**
-     * API: remove todos os vínculos do produto (POST).
-     */
     public function desvincularTodosFornecedores(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

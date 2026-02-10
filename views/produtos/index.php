@@ -1,8 +1,5 @@
 <?php
-/**
- * View: listagem de produtos e formulário (modal) para cadastro/edição.
- * Variável disponível: $produtos (array)
- */
+
 $produtos = $produtos ?? [];
 $baseUrl = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/');
 $apiBase = ($baseUrl ? $baseUrl . '/' : '') . 'index.php?controller=produto';
@@ -62,7 +59,6 @@ $indexUrl = ($baseUrl ? $baseUrl . '/' : '') . 'index.php';
         </div>
     </div>
 
-    <!-- Modal: formulário de cadastro/edição -->
     <div id="modal-produto" class="modal" role="dialog" aria-labelledby="modal-titulo" aria-hidden="true">
         <div class="modal-backdrop" id="modal-backdrop"></div>
         <div class="modal-content">
@@ -99,7 +95,6 @@ $indexUrl = ($baseUrl ? $baseUrl . '/' : '') . 'index.php';
         </div>
     </div>
 
-    <!-- Modal: Fornecedores do produto (vínculos N:N) -->
     <div id="modal-fornecedores-produto" class="modal modal-vinculos" role="dialog" aria-labelledby="modal-vinculos-titulo" aria-hidden="true">
         <div class="modal-backdrop" id="modal-vinculos-backdrop"></div>
         <div class="modal-content modal-content-wide">

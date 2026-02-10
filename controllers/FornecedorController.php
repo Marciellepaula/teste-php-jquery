@@ -1,8 +1,4 @@
 <?php
-/**
- * Controller: regra de negócio e orquestração para Fornecedores.
- * Valida entrada, chama Model e retorna JSON (AJAX) ou carrega View.
- */
 
 require_once __DIR__ . '/../models/FornecedorModel.php';
 
@@ -15,19 +11,12 @@ class FornecedorController
         $this->model = new FornecedorModel();
     }
 
-    /**
-     * Responde em JSON para o front.
-     */
     private function json(array $data): void
     {
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
-    /**
-     * Validação básica dos campos do fornecedor.
-     * @return array Lista de erros (vazia se válido)
-     */
     private function validar(array $dados): array
     {
         $errors = [];
@@ -41,9 +30,6 @@ class FornecedorController
         return $errors;
     }
 
-    /**
-     * Normaliza dados vindos do POST para o Model.
-     */
     private function normalizarPost(): array
     {
         return [
@@ -55,9 +41,6 @@ class FornecedorController
         ];
     }
 
-    /**
-     * Lista fornecedores (página HTML).
-     */
     public function index(): void
     {
         $fornecedores = $this->model->listar(null);
@@ -69,10 +52,6 @@ class FornecedorController
         }
     }
 
-    /**
-     * API: retorna lista de fornecedores em JSON (para AJAX).
-     * GET status: 'A' só ativos, 'I' só inativos, omitir ou 'all' = todos.
-     */
     public function lista(): void
     {
         $status = null;
@@ -85,9 +64,6 @@ class FornecedorController
         $this->json(['success' => true, 'data' => $fornecedores]);
     }
 
-    /**
-     * API: retorna um fornecedor por ID em JSON.
-     */
     public function buscar(): void
     {
         $id = (int) ($_GET['id'] ?? 0);
@@ -103,9 +79,6 @@ class FornecedorController
         $this->json(['success' => true, 'data' => $fornecedor]);
     }
 
-    /**
-     * API: cadastra novo fornecedor (POST). Retorno JSON.
-     */
     public function salvar(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -134,9 +107,6 @@ class FornecedorController
         }
     }
 
-    /**
-     * API: atualiza fornecedor existente (POST). Retorno JSON.
-     */
     public function atualizar(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -171,9 +141,6 @@ class FornecedorController
         }
     }
 
-    /**
-     * API: exclui fornecedor (POST). Retorno JSON.
-     */
     public function excluir(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

@@ -1,8 +1,4 @@
 <?php
-/**
- * View: listagem de fornecedores e formulário (modal) para cadastro/edição.
- * Variável disponível: $fornecedores (array)
- */
 $fornecedores = $fornecedores ?? [];
 $baseUrl = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/');
 $apiBase = ($baseUrl ? $baseUrl . '/' : '') . 'index.php?controller=fornecedor';
@@ -63,7 +59,6 @@ $indexUrl = ($baseUrl ? $baseUrl . '/' : '') . 'index.php';
         </div>
     </div>
 
-    <!-- Modal: formulário de cadastro/edição -->
     <div id="modal-fornecedor" class="modal" role="dialog" aria-labelledby="modal-titulo" aria-hidden="true">
         <div class="modal-backdrop" id="modal-backdrop"></div>
         <div class="modal-content">

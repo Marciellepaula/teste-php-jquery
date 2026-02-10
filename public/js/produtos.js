@@ -1,7 +1,3 @@
-/**
- * CRUD de produtos via AJAX (jQuery).
- * Endpoints em window.API_PRODUTO (definido na view).
- */
 (function ($) {
     'use strict';
 
@@ -165,7 +161,6 @@
         });
     });
 
-    // ---------- Modal: vínculos produto × fornecedor ----------
     var $modalVinculos = $('#modal-fornecedores-produto');
     var $vinculosProdutoId = $('#vinculos-produto-id');
     var $vinculosLista = $('#vinculos-lista');

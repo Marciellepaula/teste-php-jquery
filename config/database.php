@@ -1,8 +1,4 @@
 <?php
-/**
- * Configuração da conexão PDO com MySQL.
- * Ajuste host, dbname, user e password conforme seu ambiente.
- */
 
 define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
 define('DB_NAME', getenv('DB_NAME') ?: 'teste_php_jquery');

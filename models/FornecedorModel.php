@@ -1,8 +1,4 @@
 <?php
-/**
- * Model: acesso a dados de fornecedores.
- * Apenas operações de banco (Prepared Statements). Sem regra de negócio.
- */
 
 require_once __DIR__ . '/../config/database.php';
 
@@ -15,11 +11,6 @@ class FornecedorModel
         $this->pdo = getConnection();
     }
 
-    /**
-     * Lista todos os fornecedores, opcionalmente filtrados por status.
-     * @param string|null $status 'A', 'I' ou null para todos
-     * @return array
-     */
     public function listar(?string $status = 'A'): array
     {
         $sql = 'SELECT id, nome, cnpj, email, telefone, status, created_at, updated_at FROM fornecedores';
@@ -35,10 +26,6 @@ class FornecedorModel
         return $stmt->fetchAll();
     }
 
-    /**
-     * Busca um fornecedor por ID.
-     * @return array|null
-     */
     public function buscarPorId(int $id): ?array
     {
         $sql = 'SELECT id, nome, cnpj, email, telefone, status, created_at, updated_at FROM fornecedores WHERE id = :id';
@@ -48,10 +35,6 @@ class FornecedorModel
         return $row ?: null;
     }
 
-    /**
-     * Insere um novo fornecedor.
-     * @return int ID do registro inserido
-     */
     public function inserir(array $dados): int
     {
         $sql = 'INSERT INTO fornecedores (nome, cnpj, email, telefone, status) VALUES (:nome, :cnpj, :email, :telefone, :status)';
@@ -66,10 +49,6 @@ class FornecedorModel
         return (int) $this->pdo->lastInsertId();
     }
 
-    /**
-     * Atualiza um fornecedor existente.
-     * @return bool
-     */
     public function atualizar(int $id, array $dados): bool
     {
         $sql = 'UPDATE fornecedores SET nome = :nome, cnpj = :cnpj, email = :email, telefone = :telefone, status = :status WHERE id = :id';
@@ -85,11 +64,6 @@ class FornecedorModel
         return $stmt->rowCount() > 0;
     }
 
-    /**
-     * Exclui um fornecedor (ou apenas marca como inativo, conforme regra).
-     * Aqui: exclusão física.
-     * @return bool
-     */
     public function excluir(int $id): bool
     {
         $sql = 'DELETE FROM fornecedores WHERE id = :id';

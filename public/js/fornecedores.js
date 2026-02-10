@@ -1,7 +1,3 @@
-/**
- * CRUD de fornecedores via AJAX (jQuery).
- * Endpoints em window.API_FORNECEDOR (definido na view).
- */
 (function ($) {
     'use strict';
 
@@ -158,7 +154,4 @@
             mostrarMensagem('Erro de conexão ao salvar.', 'erro');
         });
     });
-
-    // Opcional: recarregar lista ao carregar a página (se quiser sempre dados frescos via AJAX)
-    // listarFornecedores();
 })(jQuery);
