@@ -52,7 +52,11 @@ class FornecedorProdutoModel
         }
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([':produto_id' => $produtoId]);
-        return $stmt->fetchAll();
+        $rows = $stmt->fetchAll();
+        foreach ($rows as &$row) {
+            $row['principal'] = (int) ($row['principal'] ?? 0);
+        }
+        return $rows;
     }
 
     public function listarFornecedoresNaoVinculados(int $produtoId, string $busca = ''): array

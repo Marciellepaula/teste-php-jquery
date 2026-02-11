@@ -214,10 +214,10 @@
                 return;
             }
             var itens = res.data.map(function (f) {
-                var principal = f.principal === 1 || f.principal === true;
-                var principalBadge = principal ? ' <span class="badge bg-primary">Principal</span>' : '';
-                var btnPrincipal = principal ? '' : ' <button type="button" class="btn btn-sm btn-secondary btn-definir-principal" data-fornecedor-id="' + f.id + '">Definir como principal</button>';
-                var liClass = 'list-group-item d-flex justify-content-between align-items-center' + (principal ? ' bg-light' : '');
+                var principal = Number(f.principal) === 1 || f.principal === true;
+                var principalBadge = principal ? ' <span class="badge bg-primary ms-1">Principal</span>' : '';
+                var btnPrincipal = principal ? '<span class="text-muted small">(principal)</span>' : ' <button type="button" class="btn btn-sm btn-secondary btn-definir-principal" data-fornecedor-id="' + f.id + '">Definir como principal</button>';
+                var liClass = 'list-group-item d-flex justify-content-between align-items-center' + (principal ? ' list-group-item-primary' : '');
                 return '<li class="' + liClass + '" data-fornecedor-id="' + f.id + '">' +
                     '<span>' + escapeHtml(f.nome) + (f.email ? ' <small class="text-muted">(' + escapeHtml(f.email) + ')</small>' : '') + principalBadge + '</span>' +
                     '<span>' + btnPrincipal +
