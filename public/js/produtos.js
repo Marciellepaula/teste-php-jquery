@@ -165,7 +165,7 @@
                 mostrarMensagem(res.message || 'Erro ao salvar.', 'erro');
                 if (res.errors && res.errors.length) {
                     res.errors.forEach(function (field) {
-                        $form.find('[name="' + field + '"]').addClass('is-invalid');
+                        $form.find('[name="' + CSS.escape(field) + '"]').addClass('is-invalid');
                     });
                 }
             }
