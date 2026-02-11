@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 require_once __DIR__ . '/../config/database.php';
 
 class FornecedorProdutoModel
 {
     private PDO $pdo;
 
-    private $hasPrincipalColumn;
+    private ?bool $hasPrincipalColumn = null;
 
-    private $hasHistoricoTable;
+    private ?bool $hasHistoricoTable = null;
 
     public function __construct()
     {
@@ -167,14 +169,17 @@ class FornecedorProdutoModel
         if (!$this->hasHistoricoTable()) {
             return [];
         }
+        $limit = max(1, min(500, $limit));
         $sql = 'SELECT vh.id, vh.fornecedor_id, vh.acao, vh.created_at, f.nome AS fornecedor_nome
                 FROM vinculo_historico vh
                 INNER JOIN fornecedores f ON f.id = vh.fornecedor_id
                 WHERE vh.produto_id = :pid
                 ORDER BY vh.created_at DESC
-                LIMIT ' . (int) $limit;
+                LIMIT :lim';
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([':pid' => $produtoId]);
+        $stmt->bindValue(':pid', $produtoId, PDO::PARAM_INT);
+        $stmt->bindValue(':lim', $limit, PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetchAll();
     }
 }

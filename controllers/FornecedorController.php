@@ -20,16 +20,16 @@ class FornecedorController extends BaseController
     private function validar(array $dados): array
     {
         $errors = [];
-        if ($this->validarObrigatorio($dados, 'nome')) {
+        if ($this->campoObrigatorioEstaVazio($dados, 'nome')) {
             $errors[] = 'nome';
         }
-        if ($this->validarObrigatorio($dados, 'cnpj')) {
+        if ($this->campoObrigatorioEstaVazio($dados, 'cnpj')) {
             $errors[] = 'cnpj';
         }
-        if ($this->validarObrigatorio($dados, 'telefone')) {
+        if ($this->campoObrigatorioEstaVazio($dados, 'telefone')) {
             $errors[] = 'telefone';
         }
-        if ($this->validarObrigatorio($dados, 'email')) {
+        if ($this->campoObrigatorioEstaVazio($dados, 'email')) {
             $errors[] = 'email';
         } elseif (!$this->validarEmail($dados['email'])) {
             $errors[] = 'email';
@@ -101,6 +101,7 @@ class FornecedorController extends BaseController
             $this->json(['success' => false, 'message' => 'Método não permitido.']);
             return;
         }
+        $this->requireCsrf();
         $dados = $this->normalizarPost();
         $errors = $this->validar($dados);
         if (!empty($errors)) {
@@ -115,8 +116,8 @@ class FornecedorController extends BaseController
                 'message' => 'Fornecedor cadastrado com sucesso.',
                 'data'    => ['id' => $id] + $dados,
             ]);
-        } catch (Exception $e) {
-            $this->json(['success' => false, 'message' => 'Erro ao salvar: ' . $e->getMessage()]);
+        } catch (Throwable $e) {
+            $this->handleException($e, 'Erro ao salvar o fornecedor.');
         }
     }
 
@@ -126,6 +127,7 @@ class FornecedorController extends BaseController
             $this->json(['success' => false, 'message' => 'Método não permitido.']);
             return;
         }
+        $this->requireCsrf();
         $id = $this->getInt('id', 'POST');
         if ($id <= 0) {
             $this->json(['success' => false, 'message' => 'ID inválido.']);
@@ -149,8 +151,8 @@ class FornecedorController extends BaseController
                 'message' => 'Fornecedor atualizado com sucesso.',
                 'data'    => ['id' => $id] + $dados,
             ]);
-        } catch (Exception $e) {
-            $this->json(['success' => false, 'message' => 'Erro ao atualizar: ' . $e->getMessage()]);
+        } catch (Throwable $e) {
+            $this->handleException($e, 'Erro ao atualizar o fornecedor.');
         }
     }
 
@@ -160,6 +162,7 @@ class FornecedorController extends BaseController
             $this->json(['success' => false, 'message' => 'Método não permitido.']);
             return;
         }
+        $this->requireCsrf();
         $id = $this->getInt('id', 'POST');
         if ($id <= 0) {
             $this->json(['success' => false, 'message' => 'ID inválido.']);
@@ -172,8 +175,8 @@ class FornecedorController extends BaseController
                 return;
             }
             $this->json(['success' => true, 'message' => 'Fornecedor excluído com sucesso.']);
-        } catch (Exception $e) {
-            $this->json(['success' => false, 'message' => 'Erro ao excluir: ' . $e->getMessage()]);
+        } catch (Throwable $e) {
+            $this->handleException($e, 'Erro ao excluir o fornecedor.');
         }
     }
 }

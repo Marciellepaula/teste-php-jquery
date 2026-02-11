@@ -120,6 +120,7 @@
         $.ajax({
             url: window.API_FORNECEDOR.excluir,
             method: 'POST',
+            headers: { 'X-CSRF-Token': window.CSRF_TOKEN || '' },
             data: { id: id },
             dataType: 'json'
         }).done(function (res) {
@@ -145,6 +146,7 @@
         $.ajax({
             url: url,
             method: 'POST',
+            headers: { 'X-CSRF-Token': window.CSRF_TOKEN || '' },
             data: data,
             dataType: 'json'
         }).done(function (res) {

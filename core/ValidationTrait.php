@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 trait ValidationTrait
 {
-    protected function validarObrigatorio(array $dados, string $campo): bool
+    protected function campoObrigatorioEstaVazio(array $dados, string $campo): bool
     {
         $valor = $dados[$campo] ?? '';
         $valor = is_string($valor) ? trim($valor) : $valor;

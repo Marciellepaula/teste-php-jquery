@@ -37,7 +37,7 @@ Cada pasta tem um papel claro:
 São quatro tabelas:
 
 - **fornecedores** — nome, CNPJ, e-mail, telefone, status (Ativo/Inativo)
-- **produtos** — nome, descrição, código interno (único), preço, status
+- **produtos** — nome, descrição, código interno (único), status
 - **fornecedor_produto** — liga produto e fornecedor (N:N), com campo para marcar o fornecedor principal
 - **vinculo_historico** — registro de quando um fornecedor foi vinculado ou desvinculado de um produto
 

@@ -23,18 +23,18 @@ class ProdutoController extends BaseController
     private function validar(array $dados, ?int $idParaEdicao = null): array
     {
         $errors = [];
-        if ($this->validarObrigatorio($dados, 'nome')) {
+        if ($this->campoObrigatorioEstaVazio($dados, 'nome')) {
             $errors[] = 'nome';
         }
-        if ($this->validarObrigatorio($dados, 'descricao')) {
+        if ($this->campoObrigatorioEstaVazio($dados, 'descricao')) {
             $errors[] = 'descricao';
         }
-        if ($this->validarObrigatorio($dados, 'codigo_interno')) {
+        if ($this->campoObrigatorioEstaVazio($dados, 'codigo_interno')) {
             $errors[] = 'codigo_interno';
         } elseif ($this->model->existeCodigoInterno(trim($dados['codigo_interno'] ?? ''), $idParaEdicao)) {
             $errors[] = 'codigo_interno';
         }
-        if ($this->validarObrigatorio($dados, 'status')) {
+        if ($this->campoObrigatorioEstaVazio($dados, 'status')) {
             $errors[] = 'status';
         }
         return $errors;
@@ -91,6 +91,7 @@ class ProdutoController extends BaseController
             $this->json(['success' => false, 'message' => 'Método não permitido.']);
             return;
         }
+        $this->requireCsrf();
         $dados = $this->normalizarPost();
         $errors = $this->validar($dados, null);
         if (!empty($errors)) {
@@ -105,8 +106,8 @@ class ProdutoController extends BaseController
                 'message' => 'Produto cadastrado com sucesso.',
                 'data'    => ['id' => $id] + $dados,
             ]);
-        } catch (Exception $e) {
-            $this->json(['success' => false, 'message' => 'Erro ao salvar: ' . $e->getMessage()]);
+        } catch (Throwable $e) {
+            $this->handleException($e, 'Erro ao salvar o produto.');
         }
     }
 
@@ -116,6 +117,7 @@ class ProdutoController extends BaseController
             $this->json(['success' => false, 'message' => 'Método não permitido.']);
             return;
         }
+        $this->requireCsrf();
         $id = $this->getInt('id', 'POST');
         if ($id <= 0) {
             $this->json(['success' => false, 'message' => 'ID inválido.']);
@@ -139,8 +141,8 @@ class ProdutoController extends BaseController
                 'message' => 'Produto atualizado com sucesso.',
                 'data'    => ['id' => $id] + $dados,
             ]);
-        } catch (Exception $e) {
-            $this->json(['success' => false, 'message' => 'Erro ao atualizar: ' . $e->getMessage()]);
+        } catch (Throwable $e) {
+            $this->handleException($e, 'Erro ao atualizar o produto.');
         }
     }
 
@@ -150,6 +152,7 @@ class ProdutoController extends BaseController
             $this->json(['success' => false, 'message' => 'Método não permitido.']);
             return;
         }
+        $this->requireCsrf();
         $id = $this->getInt('id', 'POST');
         if ($id <= 0) {
             $this->json(['success' => false, 'message' => 'ID inválido.']);
@@ -162,8 +165,8 @@ class ProdutoController extends BaseController
                 return;
             }
             $this->json(['success' => true, 'message' => 'Produto excluído com sucesso.']);
-        } catch (Exception $e) {
-            $this->json(['success' => false, 'message' => 'Erro ao excluir: ' . $e->getMessage()]);
+        } catch (Throwable $e) {
+            $this->handleException($e, 'Erro ao excluir o produto.');
         }
     }
 
@@ -208,6 +211,7 @@ class ProdutoController extends BaseController
             $this->json(['success' => false, 'message' => 'Método não permitido.']);
             return;
         }
+        $this->requireCsrf();
         $produtoId    = $this->getInt('produto_id', 'POST');
         $fornecedorId = $this->getInt('fornecedor_id', 'POST');
         if ($produtoId <= 0 || $fornecedorId <= 0) {
@@ -232,6 +236,7 @@ class ProdutoController extends BaseController
             $this->json(['success' => false, 'message' => 'Método não permitido.']);
             return;
         }
+        $this->requireCsrf();
         $produtoId    = $this->getInt('produto_id', 'POST');
         $fornecedorId = $this->getInt('fornecedor_id', 'POST');
         if ($produtoId <= 0 || $fornecedorId <= 0) {
@@ -252,6 +257,7 @@ class ProdutoController extends BaseController
             $this->json(['success' => false, 'message' => 'Método não permitido.']);
             return;
         }
+        $this->requireCsrf();
         $produtoId = $this->getInt('produto_id', 'POST');
         if ($produtoId <= 0) {
             $this->json(['success' => false, 'message' => 'ID do produto inválido.']);
@@ -267,6 +273,7 @@ class ProdutoController extends BaseController
             $this->json(['success' => false, 'message' => 'Método não permitido.']);
             return;
         }
+        $this->requireCsrf();
         $produtoId    = $this->getInt('produto_id', 'POST');
         $fornecedorId = $this->getInt('fornecedor_id', 'POST');
         if ($produtoId <= 0 || $fornecedorId <= 0) {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require_once __DIR__ . '/../config/database.php';
 
 class FornecedorModel
@@ -53,9 +55,9 @@ class FornecedorModel
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             ':nome'     => $dados['nome'],
-            ':cnpj'     => $dados['cnpj'] ?? null,
-            ':email'    => $dados['email'] ?? null,
-            ':telefone' => $dados['telefone'] ?? null,
+            ':cnpj'     => $dados['cnpj'] ?? '',
+            ':email'    => $dados['email'] ?? '',
+            ':telefone' => $dados['telefone'] ?? '',
             ':status'   => $dados['status'] ?? 'A',
         ]);
         return (int) $this->pdo->lastInsertId();
@@ -68,9 +70,9 @@ class FornecedorModel
         $stmt->execute([
             ':id'       => $id,
             ':nome'     => $dados['nome'],
-            ':cnpj'     => $dados['cnpj'] ?? null,
-            ':email'    => $dados['email'] ?? null,
-            ':telefone' => $dados['telefone'] ?? null,
+            ':cnpj'     => $dados['cnpj'] ?? '',
+            ':email'    => $dados['email'] ?? '',
+            ':telefone' => $dados['telefone'] ?? '',
             ':status'   => $dados['status'] ?? 'A',
         ]);
         return $stmt->rowCount() > 0;

@@ -10,6 +10,7 @@ $cssUrl = $baseUrl ? $baseUrl . '/css/style.css' : 'css/style.css';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<?= htmlspecialchars($csrf_token ?? '') ?>">
     <title>Fornecedores</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?= htmlspecialchars($cssUrl) ?>">
@@ -128,6 +129,7 @@ $cssUrl = $baseUrl ? $baseUrl . '/css/style.css' : 'css/style.css';
 
     <script src="<?= $baseUrl ? htmlspecialchars($baseUrl) . '/js/jquery-4.0.0.js' : 'js/jquery-4.0.0.js' ?>"></script>
     <script>
+        window.CSRF_TOKEN = '<?= htmlspecialchars($csrf_token ?? '') ?>';
         window.API_FORNECEDOR = {
             lista: '<?= $apiBase ?>&action=lista',
             buscar: '<?= $apiBase ?>&action=buscar',

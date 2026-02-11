@@ -127,6 +127,7 @@
         $.ajax({
             url: window.API_PRODUTO.excluir,
             method: 'POST',
+            headers: { 'X-CSRF-Token': window.CSRF_TOKEN || '' },
             data: { id: id },
             dataType: 'json'
         }).done(function (res) {
@@ -152,6 +153,7 @@
         $.ajax({
             url: url,
             method: 'POST',
+            headers: { 'X-CSRF-Token': window.CSRF_TOKEN || '' },
             data: data,
             dataType: 'json'
         }).done(function (res) {
@@ -360,6 +362,7 @@
         $.ajax({
             url: window.API_PRODUTO.vincularFornecedor,
             method: 'POST',
+            headers: { 'X-CSRF-Token': window.CSRF_TOKEN || '' },
             data: { produto_id: produtoId, fornecedor_id: fornecedorId },
             dataType: 'json'
         }).done(function (res) {
@@ -386,6 +389,7 @@
         $.ajax({
             url: window.API_PRODUTO.definirFornecedorPrincipal,
             method: 'POST',
+            headers: { 'X-CSRF-Token': window.CSRF_TOKEN || '' },
             data: { produto_id: produtoId, fornecedor_id: fornecedorId },
             dataType: 'json'
         }).done(function (res) {
@@ -411,6 +415,7 @@
         $.ajax({
             url: window.API_PRODUTO.desvincularFornecedor,
             method: 'POST',
+            headers: { 'X-CSRF-Token': window.CSRF_TOKEN || '' },
             data: { produto_id: produtoId, fornecedor_id: fornecedorId },
             dataType: 'json'
         }).done(function (res) {
@@ -437,6 +442,7 @@
         $.ajax({
             url: window.API_PRODUTO.desvincularTodosFornecedores,
             method: 'POST',
+            headers: { 'X-CSRF-Token': window.CSRF_TOKEN || '' },
             data: { produto_id: produtoId },
             dataType: 'json'
         }).done(function (res) {

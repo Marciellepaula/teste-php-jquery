@@ -2,13 +2,33 @@
 
 declare(strict_types=1);
 
+session_start();
+require_once __DIR__ . '/../core/csrf.php';
+
+$allowedRoutes = [
+    'fornecedor' => ['index', 'lista', 'buscar', 'salvar', 'atualizar', 'excluir'],
+    'produto'    => [
+        'index', 'lista', 'buscar', 'salvar', 'atualizar', 'excluir',
+        'listaFornecedores', 'buscaFornecedoresParaVincular', 'vincularFornecedor',
+        'desvincularFornecedor', 'desvincularTodosFornecedores', 'definirFornecedorPrincipal',
+        'listaHistoricoVinculos',
+    ],
+];
+
 $controllerName = $_GET['controller'] ?? 'fornecedor';
 $actionName     = $_GET['action'] ?? 'index';
+$controllerName = strtolower(trim((string) $controllerName));
+$actionName     = trim((string) $actionName);
 
-$className = ucfirst(strtolower($controllerName)) . 'Controller';
-$action    = strtolower($actionName);
+if (!isset($allowedRoutes[$controllerName]) || !in_array($actionName, $allowedRoutes[$controllerName], true)) {
+    http_response_code(404);
+    echo 'Rota não encontrada.';
+    exit;
+}
 
+$className      = ucfirst($controllerName) . 'Controller';
 $controllerFile = __DIR__ . '/../controllers/' . $className . '.php';
+
 if (!is_file($controllerFile)) {
     http_response_code(404);
     echo 'Controller não encontrado.';
@@ -23,10 +43,4 @@ if (!class_exists($className)) {
 }
 
 $controller = new $className();
-if (!method_exists($controller, $action)) {
-    http_response_code(404);
-    echo 'Action não encontrada.';
-    exit;
-}
-
-$controller->$action();
+$controller->$actionName();
