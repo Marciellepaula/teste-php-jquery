@@ -2,11 +2,7 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../core/BaseController.php';
-require_once __DIR__ . '/../core/ValidationTrait.php';
-require_once __DIR__ . '/../models/FornecedorModel.php';
-
-class FornecedorController extends BaseController
+class FornecedorController extends AbstractCrudController
 {
     use ValidationTrait;
 
@@ -15,6 +11,16 @@ class FornecedorController extends BaseController
     public function __construct()
     {
         $this->model = new FornecedorModel();
+    }
+
+    protected function getModel(): CrudModelInterface
+    {
+        return $this->model;
+    }
+
+    protected function getEntityName(): string
+    {
+        return 'Fornecedor';
     }
 
     private function validar(array $dados): array
@@ -64,35 +70,6 @@ class FornecedorController extends BaseController
     {
         $fornecedores = $this->model->listar(null);
         $this->renderView('views/fornecedores/index.php', ['fornecedores' => $fornecedores]);
-    }
-
-    public function lista(): void
-    {
-        $status = null;
-        if (isset($_GET['status']) && $_GET['status'] === 'I') {
-            $status = 'I';
-        } elseif (isset($_GET['status']) && $_GET['status'] === 'A') {
-            $status = 'A';
-        }
-        $busca = isset($_GET['busca']) ? trim((string) $_GET['busca']) : null;
-        $busca = $busca === '' ? null : $busca;
-        $fornecedores = $this->model->listar($status, $busca);
-        $this->json(['success' => true, 'data' => $fornecedores]);
-    }
-
-    public function buscar(): void
-    {
-        $id = $this->getInt('id', 'GET');
-        if ($id <= 0) {
-            $this->json(['success' => false, 'message' => 'ID inválido.']);
-            return;
-        }
-        $fornecedor = $this->model->buscarPorId($id);
-        if (!$fornecedor) {
-            $this->json(['success' => false, 'message' => 'Fornecedor não encontrado.']);
-            return;
-        }
-        $this->json(['success' => true, 'data' => $fornecedor]);
     }
 
     public function salvar(): void
@@ -153,30 +130,6 @@ class FornecedorController extends BaseController
             ]);
         } catch (Throwable $e) {
             $this->handleException($e, 'Erro ao atualizar o fornecedor.');
-        }
-    }
-
-    public function excluir(): void
-    {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->json(['success' => false, 'message' => 'Método não permitido.']);
-            return;
-        }
-        $this->requireCsrf();
-        $id = $this->getInt('id', 'POST');
-        if ($id <= 0) {
-            $this->json(['success' => false, 'message' => 'ID inválido.']);
-            return;
-        }
-        try {
-            $ok = $this->model->excluir($id);
-            if (!$ok) {
-                $this->json(['success' => false, 'message' => 'Fornecedor não encontrado.']);
-                return;
-            }
-            $this->json(['success' => true, 'message' => 'Fornecedor excluído com sucesso.']);
-        } catch (Throwable $e) {
-            $this->handleException($e, 'Erro ao excluir o fornecedor.');
         }
     }
 }

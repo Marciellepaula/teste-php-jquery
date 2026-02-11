@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/csrf.php';
-
 abstract class BaseController
 {
     protected function json(array $data, int $statusCode = 200): void
@@ -31,6 +29,23 @@ abstract class BaseController
         $source = strtoupper($source);
         $data   = $source === 'POST' ? $_POST : $_GET;
         return (int) ($data[$key] ?? 0);
+    }
+
+    protected function getStatusFromGet(): ?string
+    {
+        if (isset($_GET['status']) && $_GET['status'] === 'I') {
+            return 'I';
+        }
+        if (isset($_GET['status']) && $_GET['status'] === 'A') {
+            return 'A';
+        }
+        return null;
+    }
+
+    protected function getBuscaFromGet(): ?string
+    {
+        $busca = isset($_GET['busca']) ? trim((string) $_GET['busca']) : null;
+        return ($busca === '') ? null : $busca;
     }
 
     protected function validateCsrf(): bool

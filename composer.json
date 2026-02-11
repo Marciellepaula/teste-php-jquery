@@ -1,0 +1,13 @@
+{
+    "name": "app/teste-php-jquery",
+    "description": "Cadastro de fornecedores e produtos com vínculos",
+    "type": "project",
+    "require": {},
+    "autoload": {
+        "classmap": [
+            "core/",
+            "controllers/",
+            "models/"
+        ]
+    }
+}

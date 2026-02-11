@@ -2,12 +2,7 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../core/BaseController.php';
-require_once __DIR__ . '/../core/ValidationTrait.php';
-require_once __DIR__ . '/../models/ProdutoModel.php';
-require_once __DIR__ . '/../models/FornecedorProdutoModel.php';
-
-class ProdutoController extends BaseController
+class ProdutoController extends AbstractCrudController
 {
     use ValidationTrait;
 
@@ -18,6 +13,16 @@ class ProdutoController extends BaseController
     {
         $this->model = new ProdutoModel();
         $this->vinculoModel = new FornecedorProdutoModel();
+    }
+
+    protected function getModel(): CrudModelInterface
+    {
+        return $this->model;
+    }
+
+    protected function getEntityName(): string
+    {
+        return 'Produto';
     }
 
     private function validar(array $dados, ?int $idParaEdicao = null): array
@@ -54,35 +59,6 @@ class ProdutoController extends BaseController
     {
         $produtos = $this->model->listar(null);
         $this->renderView('views/produtos/index.php', ['produtos' => $produtos]);
-    }
-
-    public function lista(): void
-    {
-        $status = null;
-        if (isset($_GET['status']) && $_GET['status'] === 'I') {
-            $status = 'I';
-        } elseif (isset($_GET['status']) && $_GET['status'] === 'A') {
-            $status = 'A';
-        }
-        $busca = isset($_GET['busca']) ? trim((string) $_GET['busca']) : null;
-        $busca = $busca === '' ? null : $busca;
-        $produtos = $this->model->listar($status, $busca);
-        $this->json(['success' => true, 'data' => $produtos]);
-    }
-
-    public function buscar(): void
-    {
-        $id = $this->getInt('id', 'GET');
-        if ($id <= 0) {
-            $this->json(['success' => false, 'message' => 'ID inválido.']);
-            return;
-        }
-        $produto = $this->model->buscarPorId($id);
-        if (!$produto) {
-            $this->json(['success' => false, 'message' => 'Produto não encontrado.']);
-            return;
-        }
-        $this->json(['success' => true, 'data' => $produto]);
     }
 
     public function salvar(): void
@@ -143,30 +119,6 @@ class ProdutoController extends BaseController
             ]);
         } catch (Throwable $e) {
             $this->handleException($e, 'Erro ao atualizar o produto.');
-        }
-    }
-
-    public function excluir(): void
-    {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->json(['success' => false, 'message' => 'Método não permitido.']);
-            return;
-        }
-        $this->requireCsrf();
-        $id = $this->getInt('id', 'POST');
-        if ($id <= 0) {
-            $this->json(['success' => false, 'message' => 'ID inválido.']);
-            return;
-        }
-        try {
-            $ok = $this->model->excluir($id);
-            if (!$ok) {
-                $this->json(['success' => false, 'message' => 'Produto não encontrado.']);
-                return;
-            }
-            $this->json(['success' => true, 'message' => 'Produto excluído com sucesso.']);
-        } catch (Throwable $e) {
-            $this->handleException($e, 'Erro ao excluir o produto.');
         }
     }
 

@@ -10,6 +10,7 @@ Sistema simples de cadastro de **fornecedores** e **produtos**, com vínculo ent
 - **Frontend:** jQuery 4.0, Bootstrap 5.3 e CSS em `public/css/style.css`
 - **Banco:** MySQL 8.0 (InnoDB, utf8mb4)
 - **Ambiente:** Docker — servidor PHP na porta 8080 e MySQL na 3306
+- **Autoload:** Composer (classmap) — as classes são carregadas automaticamente; `config/` fica fora do document root
 
 ---
 
@@ -29,6 +30,7 @@ Cada pasta tem um papel claro:
 | `public/js/` | `fornecedores.js` e `produtos.js` — chamadas AJAX e interação com modais; jQuery 4.0.0 |
 | `sql/install.sql` | Criação do banco e das tabelas (fornecedores, produtos, fornecedor_produto, vinculo_historico) |
 | `docker-compose.yml` e `Dockerfile` | App em PHP 7.4 + MySQL 8; ao subir, o script de instalação do banco é executado |
+| `composer.json` | Autoload (classmap) para core/, controllers/, models/; rodar `composer install` na raiz |
 
 ---
 
@@ -47,9 +49,17 @@ Para detalhes do desenho do banco e das escolhas, veja o [DECISOES.md](DECISOES.
 
 ## Como rodar
 
-### Com Docker 
+O servidor deve ter a pasta **`public/`** como document root (apenas ela é acessível pela web; `config/`, `sql/`, etc. ficam fora). No Docker isso já está configurado (`php -S ... -t public`).
 
-Na pasta do projeto:
+### Com Docker
+
+Na pasta do projeto, gere o autoload (se ainda não tiver a pasta `vendor/`):
+
+```bash
+composer install
+```
+
+Depois:
 
 ```bash
 docker compose up -d
