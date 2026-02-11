@@ -78,16 +78,16 @@ $cssUrl = $baseUrl ? $baseUrl . '/css/style.css' : 'css/style.css';
                             <input type="text" id="nome" name="nome" class="form-control" required maxlength="150" placeholder="Nome do produto">
                         </div>
                         <div class="mb-3">
-                            <label for="descricao" class="form-label">Descrição</label>
-                            <textarea id="descricao" name="descricao" class="form-control" rows="3" maxlength="2000" placeholder="Descrição opcional"></textarea>
+                            <label for="descricao" class="form-label">Descrição <span class="text-danger">*</span></label>
+                            <textarea id="descricao" name="descricao" class="form-control" rows="3" required maxlength="2000" placeholder="Descrição do produto"></textarea>
                         </div>
                         <div class="mb-3">
-                            <label for="codigo_interno" class="form-label">Código interno</label>
-                            <input type="text" id="codigo_interno" name="codigo_interno" class="form-control" maxlength="50" placeholder="Ex: PROD-001">
+                            <label for="codigo_interno" class="form-label">Código interno <span class="text-danger">*</span></label>
+                            <input type="text" id="codigo_interno" name="codigo_interno" class="form-control" required maxlength="50" placeholder="Ex: PROD-001">
                         </div>
                         <div class="mb-3">
-                            <label for="status" class="form-label">Status</label>
-                            <select id="status" name="status" class="form-select">
+                            <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
+                            <select id="status" name="status" class="form-select" required>
                                 <option value="A">Ativo</option>
                                 <option value="I">Inativo</option>
                             </select>

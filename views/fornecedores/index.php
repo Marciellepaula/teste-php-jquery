@@ -79,16 +79,16 @@ $cssUrl = $baseUrl ? $baseUrl . '/css/style.css' : 'css/style.css';
                             <input type="text" id="nome" name="nome" class="form-control" required maxlength="150" placeholder="Razão social">
                         </div>
                         <div class="mb-3">
-                            <label for="cnpj" class="form-label">CNPJ</label>
-                            <input type="text" id="cnpj" name="cnpj" class="form-control" maxlength="18" placeholder="00.000.000/0000-00">
+                            <label for="cnpj" class="form-label">CNPJ <span class="text-danger">*</span></label>
+                            <input type="text" id="cnpj" name="cnpj" class="form-control" required maxlength="18" placeholder="00.000.000/0000-00">
                         </div>
                         <div class="mb-3">
-                            <label for="email" class="form-label">E-mail</label>
-                            <input type="email" id="email" name="email" class="form-control" maxlength="100" placeholder="contato@exemplo.com">
+                            <label for="email" class="form-label">E-mail <span class="text-danger">*</span></label>
+                            <input type="email" id="email" name="email" class="form-control" required maxlength="100" placeholder="contato@exemplo.com">
                         </div>
                         <div class="mb-3">
-                            <label for="telefone" class="form-label">Telefone</label>
-                            <input type="text" id="telefone" name="telefone" class="form-control" maxlength="20" placeholder="(00) 00000-0000">
+                            <label for="telefone" class="form-label">Telefone <span class="text-danger">*</span></label>
+                            <input type="text" id="telefone" name="telefone" class="form-control" required maxlength="20" placeholder="(00) 00000-0000">
                         </div>
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>

@@ -3,11 +3,14 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../core/BaseController.php';
+require_once __DIR__ . '/../core/ValidationTrait.php';
 require_once __DIR__ . '/../models/ProdutoModel.php';
 require_once __DIR__ . '/../models/FornecedorProdutoModel.php';
 
 class ProdutoController extends BaseController
 {
+    use ValidationTrait;
+
     private ProdutoModel $model;
     private FornecedorProdutoModel $vinculoModel;
 
@@ -20,13 +23,19 @@ class ProdutoController extends BaseController
     private function validar(array $dados, ?int $idParaEdicao = null): array
     {
         $errors = [];
-        $nome = trim($dados['nome'] ?? '');
-        if ($nome === '') {
+        if ($this->validarObrigatorio($dados, 'nome')) {
             $errors[] = 'nome';
         }
-        $codigo = trim($dados['codigo_interno'] ?? '');
-        if ($codigo !== '' && $this->model->existeCodigoInterno($codigo, $idParaEdicao)) {
+        if ($this->validarObrigatorio($dados, 'descricao')) {
+            $errors[] = 'descricao';
+        }
+        if ($this->validarObrigatorio($dados, 'codigo_interno')) {
             $errors[] = 'codigo_interno';
+        } elseif ($this->model->existeCodigoInterno(trim($dados['codigo_interno'] ?? ''), $idParaEdicao)) {
+            $errors[] = 'codigo_interno';
+        }
+        if ($this->validarObrigatorio($dados, 'status')) {
+            $errors[] = 'status';
         }
         return $errors;
     }
@@ -159,11 +168,12 @@ class ProdutoController extends BaseController
     private function mensagemErroValidacao(array $errors): string
     {
         if (in_array('codigo_interno', $errors)) {
-            return 'Código interno já está em uso por outro produto.';
+            $codigo = trim($_POST['codigo_interno'] ?? '');
+            return $codigo === '' ? 'Código interno é obrigatório.' : 'Código interno já está em uso por outro produto.';
         }
-        if (in_array('nome', $errors)) {
-            return 'Nome é obrigatório.';
-        }
+        if (in_array('nome', $errors)) return 'Nome é obrigatório.';
+        if (in_array('descricao', $errors)) return 'Descrição é obrigatória.';
+        if (in_array('status', $errors)) return 'Status é obrigatório.';
         return 'Verifique os campos.';
     }
 
