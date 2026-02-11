@@ -1,66 +1,47 @@
+## Como modelei o banco de dados
 
+Usei **MySQL (InnoDB)** e normalizei até a **3ª forma normal** para evitar repetição de dados. As tabelas se ligam por **chaves estrangeiras** com `ON DELETE CASCADE` e `ON UPDATE CASCADE`, assim nada fica órfão quando algo é apagado.
 
-##  Como modelei o banco de dados
-
-O banco de dados foi modelado utilizando **MySQL com engine InnoDB**, seguindo princípios de **normalização até a 3ª forma normal (3FN)**, com o objetivo de evitar redundância de dados e garantir consistência das informações.
-
-A **integridade referencial** é por meio do uso de **chaves estrangeiras (FOREIGN KEY)** com regras de `ON DELETE CASCADE` e `ON UPDATE CASCADE`, garantindo que não existam registros órfãos e que os vínculos entre produtos e fornecedores permaneçam consistentes.
-
-A estrutura foi dividida em quatro tabelas principais:
+São quatro tabelas:
 
 ---
 
-### 🔹 `fornecedores`
+### `fornecedores`
 
-Armazena os dados cadastrais dos fornecedores.
-
-- Controle de status (Ativo/Inativo)
-- Índices para otimização de consultas por nome e status
-- Campos de auditoria (`created_at`, `updated_at`)
+Cadastro dos fornecedores: nome, CNPJ, email, telefone, status (Ativo/Inativo). Índices em nome e status para as buscas. Campos `created_at` e `updated_at` para auditoria.
 
 ---
 
-### 🔹 `produtos`
+### `produtos`
 
-Responsável pelos dados dos produtos.
-
-- Campo `codigo_interno` definido como **único**, evitando duplicidade
-- Controle de status
-- Campos de auditoria (`created_at`, `updated_at`)
+Cadastro dos produtos: nome, descrição, código interno (único), status. Também `created_at` e `updated_at`.
 
 ---
 
-### 🔹 `fornecedor_produto`
+### `fornecedor_produto`
 
-Tabela intermediária responsável pelo relacionamento **N:N (muitos para muitos)** entre produtos e fornecedores.
-
-- Chave primária composta (`fornecedor_id`, `produto_id`)
-- Impede vínculos duplicados
-- Campo `principal` para definir o fornecedor principal do produto
-- Chaves estrangeiras garantindo integridade referencial
+Tabela do meio do relacionamento **N:N** entre produto e fornecedor. Chave primária composta (`fornecedor_id`, `produto_id`) para não ter vínculo duplicado. Tem o campo `principal` para marcar o fornecedor principal do produto.
 
 ---
 
-### 🔹 `vinculo_historico`
+### `vinculo_historico`
 
-Tabela criada para registrar ações realizadas nos vínculos (ex: criação e remoção), permitindo rastreabilidade simples das operações realizadas no sistema.
-
----
-
-##  Por que escolhi essa estrutura
-
-- Separa claramente as responsabilidades entre as entidades.
-- Resolve corretamente o relacionamento muitos-para-muitos.
-- Evita redundância de dados.
-- Mantém consistência através de regras no próprio banco.
-- Estrutura simples, organizada e escalável.
-- Padrão que utilizo com frequência por sua robustez e clareza.
+Guarda quando um fornecedor foi vinculado ou desvinculado de um produto, para ter um histórico simples.
 
 ---
 
-##  O que melhoraria se tivesse mais tempo
+## Por que escolhi essa estrutura
 
-- Implementaria **testes automatizados** para validação das regras de negócio.
-- Melhoraria a separação de responsabilidades com camadas como **Service** e **Repository**.
-- Criaria sistema de **autenticação e controle de acesso**.
+Separa bem cada entidade, resolve o N:N de forma direta e evita redundância. É um desenho que eu uso bastante: simples de manter e o próprio banco garante consistência.
 
+---
+
+## Por que escolhi a Opção B (e um pouco da A e C)
+
+Escolhi a **Opção B** (regra de negócio) porque deixa o sistema mais confiável: bloquear vínculo com fornecedor inativo evita incoerência; fornecedor principal e histórico ajudam o comercial a decidir com base em quem realmente fornece e no que já aconteceu. Também coloquei filtro e busca na listagem (Opção A) e organizei em MVC com um trait de validação reutilizável (Opção C).
+
+---
+
+## O que melhoraria com mais tempo
+
+Testes automatizados para as regras de negócio, camadas de Service e Repository, e autenticação/controle de acesso.
