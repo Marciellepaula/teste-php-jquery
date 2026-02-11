@@ -11,13 +11,25 @@ class FornecedorModel
         $this->pdo = getConnection();
     }
 
-    public function listar(?string $status = 'A'): array
+    public function listar(?string $status = null, ?string $busca = null): array
     {
         $sql = 'SELECT id, nome, cnpj, email, telefone, status, created_at, updated_at FROM fornecedores';
         $params = [];
-        if ($status !== null) {
-            $sql .= ' WHERE status = :status';
+        $where = [];
+        if ($status !== null && $status !== '') {
+            $where[] = 'status = :status';
             $params[':status'] = $status;
+        }
+        if ($busca !== null && trim($busca) !== '') {
+            $termo = '%' . trim($busca) . '%';
+            $where[] = '(nome LIKE :busca_nome OR email LIKE :busca_email OR cnpj LIKE :busca_cnpj OR telefone LIKE :busca_tel)';
+            $params[':busca_nome'] = $termo;
+            $params[':busca_email'] = $termo;
+            $params[':busca_cnpj'] = $termo;
+            $params[':busca_tel'] = $termo;
+        }
+        if (!empty($where)) {
+            $sql .= ' WHERE ' . implode(' AND ', $where);
         }
         $sql .= ' ORDER BY nome';
 

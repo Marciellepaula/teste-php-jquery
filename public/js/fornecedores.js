@@ -30,9 +30,12 @@
     }
 
     function listarFornecedores() {
+        var status = $('#filtro-status').val() || '';
+        var busca = $('#busca-fornecedor').val().trim();
         $.ajax({
             url: window.API_FORNECEDOR.lista,
             method: 'GET',
+            data: { status: status, busca: busca },
             dataType: 'json'
         }).done(function (res) {
             if (!res.success || !res.data) return;
@@ -63,6 +66,15 @@
         div.textContent = s;
         return div.innerHTML;
     }
+
+    var buscaFornecedorTimer;
+    $('#filtro-status').on('change', function () {
+        listarFornecedores();
+    });
+    $('#busca-fornecedor').on('input', function () {
+        clearTimeout(buscaFornecedorTimer);
+        buscaFornecedorTimer = setTimeout(listarFornecedores, 350);
+    });
 
     $('#btn-novo-fornecedor').on('click', function () {
         abrirModal('Novo fornecedor');

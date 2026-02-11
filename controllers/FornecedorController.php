@@ -74,7 +74,9 @@ class FornecedorController extends BaseController
         } elseif (isset($_GET['status']) && $_GET['status'] === 'A') {
             $status = 'A';
         }
-        $fornecedores = $this->model->listar($status);
+        $busca = isset($_GET['busca']) ? trim((string) $_GET['busca']) : null;
+        $busca = $busca === '' ? null : $busca;
+        $fornecedores = $this->model->listar($status, $busca);
         $this->json(['success' => true, 'data' => $fornecedores]);
     }
 

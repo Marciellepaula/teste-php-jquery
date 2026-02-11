@@ -11,13 +11,24 @@ class ProdutoModel
         $this->pdo = getConnection();
     }
 
-    public function listar(?string $status = null): array
+    public function listar(?string $status = null, ?string $busca = null): array
     {
         $sql = 'SELECT id, nome, descricao, codigo_interno, status, created_at, updated_at FROM produtos';
         $params = [];
-        if ($status !== null) {
-            $sql .= ' WHERE status = :status';
+        $where = [];
+        if ($status !== null && $status !== '') {
+            $where[] = 'status = :status';
             $params[':status'] = $status;
+        }
+        if ($busca !== null && trim($busca) !== '') {
+            $termo = '%' . trim($busca) . '%';
+            $where[] = '(nome LIKE :busca_nome OR codigo_interno LIKE :busca_codigo OR descricao LIKE :busca_desc)';
+            $params[':busca_nome'] = $termo;
+            $params[':busca_codigo'] = $termo;
+            $params[':busca_desc'] = $termo;
+        }
+        if (!empty($where)) {
+            $sql .= ' WHERE ' . implode(' AND ', $where);
         }
         $sql .= ' ORDER BY nome';
 

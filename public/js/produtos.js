@@ -37,9 +37,12 @@
     }
 
     function listarProdutos() {
+        var status = $('#filtro-status').val() || '';
+        var busca = $('#busca-produto').val().trim();
         $.ajax({
             url: window.API_PRODUTO.lista,
             method: 'GET',
+            data: { status: status, busca: busca },
             dataType: 'json'
         }).done(function (res) {
             if (!res.success || !res.data) return;
@@ -71,6 +74,15 @@
         div.textContent = s;
         return div.innerHTML;
     }
+
+    var buscaProdutoTimer;
+    $('#filtro-status').on('change', function () {
+        listarProdutos();
+    });
+    $('#busca-produto').on('input', function () {
+        clearTimeout(buscaProdutoTimer);
+        buscaProdutoTimer = setTimeout(listarProdutos, 350);
+    });
 
     $('#btn-novo-produto').on('click', function () {
         abrirModal('Novo produto');

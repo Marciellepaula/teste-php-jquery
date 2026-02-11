@@ -6,10 +6,8 @@ class FornecedorProdutoModel
 {
     private PDO $pdo;
 
-    /** @var bool|null cache: tabela tem coluna principal? */
     private $hasPrincipalColumn;
 
-    /** @var bool|null cache: tabela vinculo_historico existe? */
     private $hasHistoricoTable;
 
     public function __construct()

@@ -27,6 +27,25 @@ $cssUrl = $baseUrl ? $baseUrl . '/css/style.css' : 'css/style.css';
 
         <div id="mensagem" class="alert d-none" role="alert"></div>
 
+        <div class="card mb-3">
+            <div class="card-body py-2">
+                <div class="row g-2 align-items-center">
+                    <div class="col-auto">
+                        <label for="filtro-status" class="form-label mb-0 small">Status</label>
+                        <select id="filtro-status" class="form-select form-select-sm" style="width:auto">
+                            <option value="">Todos</option>
+                            <option value="A">Ativo</option>
+                            <option value="I">Inativo</option>
+                        </select>
+                    </div>
+                    <div class="col-auto flex-grow-1">
+                        <label for="busca-fornecedor" class="form-label mb-0 small">Busca</label>
+                        <input type="text" id="busca-fornecedor" class="form-control form-control-sm" placeholder="Nome, e-mail, CNPJ ou telefone..." autocomplete="off">
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="card">
             <div class="card-body p-0">
                 <table class="table table-striped table-hover mb-0" id="tabela-fornecedores">
