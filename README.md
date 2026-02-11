@@ -4,7 +4,7 @@ PHP 7.4 + MySQL + jQuery. Fornecedores, Produtos e vínculo N:N.
 
 ## Como rodar
 
-### 1. Com Docker (recomendado)
+### 1. Com Docker
 
 Na pasta do projeto:
 
